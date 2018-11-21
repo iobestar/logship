@@ -1,0 +1,3 @@
+2018-08-08 18:58:15.397  INFO 1 --- [Thread-5] .c.r.s.a.c.p.ClusterProcessor : Replicated: location=10, clusterUuid=59f47858-83da-42d8-b460-2dcbdf62ddb4
+2018-09-06 22:58:15.415  INFO 1 --- [Thread-7] .c.r.s.a.c.p.ClusterProcessor : Replicated: location=2, clusterUuid=88c4b03d-714e-4592-b560-4b967766ce23
+2018-09-06 22:58:15.434  INFO 1 --- [Thread-6] .c.r.s.a.c.p.ClusterProcessor : Replicated: location=8, clusterUuid=f06dedaf-d7ca-404b-8f3e-e56c19fc3a1f

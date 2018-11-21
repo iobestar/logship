@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.logship.rpc";
+option java_outer_classname = "Logship";
+
+package rpc;
+
+service LogUnitService {
+    rpc GetUnits (Empty) returns (stream UnitRS);
+    rpc GetNLogs (NLogRQ) returns (stream LogRS);
+    rpc GetTLogs (TLogRQ) returns (stream LogRS);
+    rpc GetNLines (NLineRQ) returns (stream NLineRS);
+    rpc GetFLines (FLineRQ) returns (stream NLineRS);
+}
+
+message Empty {
+}
+
+message NLogRQ {
+    string unit_id = 1;
+    int32 count = 2;
+}
+
+message TLogRQ {
+    string unit_id = 1;
+    int64 offset = 2;
+    string duration = 3;
+}
+
+message FLogRQ {
+    string unit_id = 1;
+}
+
+message LogRS {
+    string payload = 1;
+}
+
+message NLineRQ {
+    string unit_id = 1;
+    int32 count = 2;
+}
+
+message FLineRQ {
+    string unit_id = 1;
+}
+
+message NLineRS {
+    string line = 1;
+    int32 count = 2;
+}
+
+message UnitRS {
+    string unit = 1;
+}
