@@ -113,7 +113,7 @@ func TestGetLinesLimitedByCount(t *testing.T) {
 	})
 
 	assert.EqualValues(t, 3, len(lines))
-	assert.EqualValues(t, "", lines[0])
-	assert.EqualValues(t, "third line", lines[1])
-	assert.EqualValues(t, "", lines[2])
+	assert.EqualValues(t, "third line", lines[0])
+	assert.EqualValues(t, "", lines[1])
+	assert.EqualValues(t, "second line", lines[2])
 }
