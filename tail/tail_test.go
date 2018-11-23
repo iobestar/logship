@@ -25,12 +25,11 @@ func TestReadTail(t *testing.T) {
 		}
 	}
 
-	assert.Equal(t, 5, len(result))
-	assert.Equal(t, "", result[0])
-	assert.Equal(t, "line3", result[1])
-	assert.Equal(t, "", result[2])
-	assert.Equal(t, "line2", result[3])
-	assert.Equal(t, "line1", result[4])
+	assert.Equal(t, 4, len(result))
+	assert.Equal(t, "line3", result[0])
+	assert.Equal(t, "", result[1])
+	assert.Equal(t, "line2", result[2])
+	assert.Equal(t, "line1", result[3])
 
 	c()
 	<- ctx.Done()

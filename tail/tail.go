@@ -29,11 +29,11 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 
 	go func() {
 		defer close(lines)
-		var line = strings.Builder{}
+		var lineBuffer = strings.Builder{}
 		for {
 			if remain == 0 {
-				lines <- reverse(line.String())
-				break
+				lines <- reverse(lineBuffer.String())
+				return
 			}
 
 			if int64(cap(buf)) >= remain {
@@ -55,14 +55,17 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 			for i := n; i > 0; i = i - 1 {
 				c := buf[i-1]
 				if c == '\n' {
+					if i == n && total == 0 { // is last new line
+						continue
+					}
 					select {
-					case lines <- reverse(line.String()):
-						line.Reset()
+					case lines <- reverse(lineBuffer.String()):
+						lineBuffer.Reset()
 					case <-ctx.Done():
 						return
 					}
 				} else {
-					line.WriteByte(c)
+					lineBuffer.WriteByte(c)
 				}
 			}
 
@@ -73,6 +76,7 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 
 	return lines, nil
 }
+
 
 func reverse(s string) string {
 	r := []rune(s)
