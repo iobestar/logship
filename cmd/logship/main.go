@@ -14,6 +14,10 @@ import (
 	"syscall"
 	"os/signal"
 	"github.com/iobestar/logship/utils/logger"
+	"github.com/soheilhy/cmux"
+	"net/http"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"strings"
 )
 
 var (
@@ -75,12 +79,43 @@ func main() {
 			logger.Error.Fatal(err)
 		}
 
-		logger.Info.Printf("Starting RPC server: %s", *address)
-		if err = grpcServer.Serve(lis); err != nil {
-			logger.Error.Fatal(err)
+		m := cmux.New(lis)
+		grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+		httpL := m.Match(cmux.HTTP1Fast())
+
+		go func() {
+			logger.Info.Printf("Starting RPC server: %s", *address)
+			if err = grpcServer.Serve(grpcL); err != cmux.ErrListenerClosed && err != nil {
+				logger.Error.Fatal(err)
+			}
+		}()
+
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", promhttp.Handler())
+		httpS := &http.Server{
+			Handler: mux,
 		}
-	case client.FullCommand():
-		fmt.Println("CLIENT")
+
+		go func() {
+			logger.Info.Printf("Starting HTTP server: %s", *address)
+			if err = httpS.Serve(httpL); err != http.ErrServerClosed {
+				logger.Error.Fatal(err)
+			}
+		}()
+
+		go func() {
+			if err := m.Serve(); !strings.Contains(err.Error(), "use of closed network connection") {
+				panic(err)
+			}
+		}()
+
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+		select {
+		case <-sig:
+			httpS.Shutdown(context.Background())
+			grpcServer.GracefulStop()
+		}
 	case units.FullCommand():
 		cli, err := NewLogshipClient((*targets)[0])
 		if nil != err {
