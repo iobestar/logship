@@ -117,13 +117,13 @@ func main() {
 			grpcServer.GracefulStop()
 		}
 	case units.FullCommand():
-		cli, err := NewLogshipClient((*targets)[0])
-		if nil != err {
-			panic(err)
-		}
+		cli := NewLogshipClient((*targets)[0])
 		defer cli.Close()
 
 		unitStream, err := cli.GetUnits(context.Background(), &pb.Empty{})
+		if nil!= err {
+			logger.Error.Fatalf("Error executing units command: %s", err.Error())
+		}
 		for {
 			u, err := unitStream.Recv()
 			if err == io.EOF {
@@ -136,16 +136,17 @@ func main() {
 		}
 	case nLog.FullCommand():
 
-		cli, err := NewLogshipClient((*targets)[0])
-		if nil != err {
-			panic(err)
-		}
+		cli := NewLogshipClient((*targets)[0])
 		defer cli.Close()
 
 		logStream, err := cli.GetNLogs(context.Background(), &pb.NLogRQ{
 			UnitId: *nLogUnitId,
 			Count:  int32(*nLogCount),
 		})
+		if nil!= err {
+			logger.Error.Fatalf("Error executing nlogs command: %s", err.Error())
+		}
+
 		var result []string
 		for {
 			logEntry, err := logStream.Recv()
@@ -162,10 +163,7 @@ func main() {
 		}
 	case tLog.FullCommand():
 
-		cli, err := NewLogshipClient((*targets)[0])
-		if nil != err {
-			panic(err)
-		}
+		cli := NewLogshipClient((*targets)[0])
 		defer cli.Close()
 
 		logStream, err := cli.GetTLogs(context.Background(), &pb.TLogRQ{
@@ -173,6 +171,9 @@ func main() {
 			Duration: *tLogDuration,
 			Offset:   0,
 		})
+		if nil!= err {
+			logger.Error.Fatalf("Error executing tlogs command: %s", err.Error())
+		}
 
 		var result []string
 		for {
@@ -189,18 +190,17 @@ func main() {
 			fmt.Println(result[i-1])
 		}
 	case nLine.FullCommand():
-		cli, err := NewLogshipClient((*targets)[0])
-		if nil != err {
-			panic(err)
-		}
+		cli := NewLogshipClient((*targets)[0])
 		defer cli.Close()
 
-		rq := &pb.NLineRQ{
+		lineStream, err := cli.GetNLines(context.Background(), &pb.NLineRQ{
 			UnitId: *nLineUnitId,
 			Count:  int32(*nLineCount),
+		})
+		if nil!= err {
+			logger.Error.Fatalf("Error executing nlines command: %s", err.Error())
 		}
 
-		lineStream, err := cli.GetNLines(context.Background(), rq)
 		var result []string
 		for {
 			rs, err := lineStream.Recv()
@@ -216,17 +216,17 @@ func main() {
 			fmt.Println(result[i-1])
 		}
 	case fLine.FullCommand():
-		cli, err := NewLogshipClient((*targets)[0])
-		if nil != err {
-			panic(err)
-		}
+		cli := NewLogshipClient((*targets)[0])
 		defer cli.Close()
 
-		rq := &pb.FLineRQ{
-			UnitId: *fLineUnitId,
-		}
 		ctx, cancel := context.WithCancel(context.Background())
-		lineStream, err := cli.GetFLines(ctx, rq)
+		lineStream, err := cli.GetFLines(ctx, &pb.FLineRQ{
+			UnitId: *fLineUnitId,
+		})
+		if nil!= err {
+			logger.Error.Fatalf("Error executing flines command: %s", err.Error())
+		}
+
 		go func() {
 			for {
 				rs, err := lineStream.Recv()
@@ -279,16 +279,16 @@ func (lc *LogshipClient) Close() error {
 	return lc.cnn.Close()
 }
 
-func NewLogshipClient(target string) (*LogshipClient, error) {
+func NewLogshipClient(target string) (*LogshipClient) {
 
 	conn, err := grpc.Dial(target, grpc.WithInsecure())
 	if err != nil {
-		return nil, err
+		logger.Error.Fatalf("Unable to create logship client: %s", err.Error())
 	}
 
 	service := pb.NewLogUnitServiceClient(conn)
 	return &LogshipClient{
 		cnn:      conn,
 		delegate: service,
-	}, nil
+	}
 }
