@@ -40,33 +40,6 @@ func (dls *DefaultLogService) GetNLines(rq *NLineRQ, stream LogUnitService_GetNL
 	})
 }
 
-func (dls *DefaultLogService) GetFLines(rq *FLineRQ, stream LogUnitService_GetFLinesServer) error {
-
-	logUnit := dls.unitManager.GetLogUnit(rq.UnitId)
-	if nil == logUnit {
-		return nil
-	}
-
-	result, err := logUnit.FluentRead(stream.Context())
-	if nil != err {
-		return err
-	}
-
-	for {
-		d, more := <-result
-		if more {
-			r := NLineRS{
-				Line: d,
-			}
-			stream.Send(&r)
-		} else {
-			break
-		}
-	}
-
-	return nil
-}
-
 func (dls *DefaultLogService) GetNLogs(rq *NLogRQ, stream LogUnitService_GetNLogsServer) error {
 
 	logUnit := dls.unitManager.GetLogUnit(rq.UnitId)

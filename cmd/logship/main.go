@@ -42,8 +42,6 @@ var (
 	nLine        = client.Command("nlines", "Fetch fixed numbers of line form Logship server")
 	nLineUnitId  = nLine.Arg("unit-id", "Log unit identifier").Required().String()
 	nLineCount   = nLine.Arg("count", "Number of lines").Int()
-	fLine        = client.Command("flines", "Stream lines from Logship server")
-	fLineUnitId  = fLine.Arg("unit-id", "Log unit identifier").Required().String()
 )
 
 func main() {
@@ -215,37 +213,6 @@ func main() {
 		for i := len(result); i > 0; i = i - 1 {
 			fmt.Println(result[i-1])
 		}
-	case fLine.FullCommand():
-		cli := NewLogshipClient((*targets)[0])
-		defer cli.Close()
-
-		ctx, cancel := context.WithCancel(context.Background())
-		lineStream, err := cli.GetFLines(ctx, &pb.FLineRQ{
-			UnitId: *fLineUnitId,
-		})
-		if nil!= err {
-			logger.Error.Fatalf("Error executing flines command: %s", err.Error())
-		}
-
-		go func() {
-			for {
-				rs, err := lineStream.Recv()
-				if err == io.EOF {
-					break
-				}
-				if err != nil {
-					panic(err)
-				}
-				fmt.Print(rs.Line)
-			}
-		}()
-
-		sig := make(chan os.Signal, 1)
-		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-		select {
-		case <-sig:
-			cancel()
-		}
 	default:
 	}
 }
@@ -269,10 +236,6 @@ func (lc *LogshipClient) GetUnits(ctx context.Context, rq *pb.Empty, opts ...grp
 
 func (lc *LogshipClient) GetNLines(ctx context.Context, rq *pb.NLineRQ, opts ...grpc.CallOption) (pb.LogUnitService_GetNLinesClient, error) {
 	return lc.delegate.GetNLines(ctx, rq, opts...)
-}
-
-func (lc *LogshipClient) GetFLines(ctx context.Context, rq *pb.FLineRQ, opts ...grpc.CallOption) (pb.LogUnitService_GetNLinesClient, error) {
-	return lc.delegate.GetFLines(ctx, rq, opts...)
 }
 
 func (lc *LogshipClient) Close() error {

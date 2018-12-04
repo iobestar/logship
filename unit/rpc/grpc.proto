@@ -11,7 +11,6 @@ service LogUnitService {
     rpc GetNLogs (NLogRQ) returns (stream LogRS);
     rpc GetTLogs (TLogRQ) returns (stream LogRS);
     rpc GetNLines (NLineRQ) returns (stream NLineRS);
-    rpc GetFLines (FLineRQ) returns (stream NLineRS);
 }
 
 message Empty {
@@ -39,10 +38,6 @@ message LogRS {
 message NLineRQ {
     string unit_id = 1;
     int32 count = 2;
-}
-
-message FLineRQ {
-    string unit_id = 1;
 }
 
 message NLineRS {
