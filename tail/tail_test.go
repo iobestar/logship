@@ -1,24 +1,24 @@
 package tail
 
 import (
-	"testing"
-	"os"
-	"github.com/stretchr/testify/assert"
 	"context"
+	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestReadTail(t *testing.T) {
-	f, _ := os.Open("fixture/tail/test.log")
+	f, _ := os.Open("fixture/test.log")
 	defer f.Close()
 
-	ctx, c := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 	lines, err := ReadTail(ctx, f)
-	assert.Nil(t, err, "Error reading tail line")
+	assert.Nil(t, err, "error reading tail line")
 
 	var result []string
 	for {
-		line, more := <-lines
-		if more {
+		line, ok := <-lines
+		if ok {
 			result = append(result, line)
 		} else {
 			break
@@ -31,6 +31,6 @@ func TestReadTail(t *testing.T) {
 	assert.Equal(t, "line2", result[2])
 	assert.Equal(t, "line1", result[3])
 
-	c()
+	cancel()
 	<- ctx.Done()
 }

@@ -8,31 +8,16 @@ package rpc;
 
 service LogUnitService {
     rpc GetUnits (Empty) returns (stream UnitRS);
-    rpc GetNLogs (NLogRQ) returns (stream LogRS);
-    rpc GetTLogs (TLogRQ) returns (stream LogRS);
-    rpc GetNLines (NLineRQ) returns (stream NLineRS);
+    rpc NLines(NLineRQ) returns (stream NLineRS);
+    rpc NLogs(NLogRQ) returns (stream LogRS);
+    rpc TLogs(TLogRQ) returns (stream LogRS);
 }
 
 message Empty {
 }
 
-message NLogRQ {
-    string unit_id = 1;
-    int32 count = 2;
-}
-
-message TLogRQ {
-    string unit_id = 1;
-    int64 offset = 2;
-    string duration = 3;
-}
-
-message FLogRQ {
-    string unit_id = 1;
-}
-
-message LogRS {
-    string payload = 1;
+message UnitRS {
+    string unit = 1;
 }
 
 message NLineRQ {
@@ -42,9 +27,23 @@ message NLineRQ {
 
 message NLineRS {
     string line = 1;
-    int32 count = 2;
 }
 
-message UnitRS {
-    string unit = 1;
+message NLogRQ {
+    string unit_id = 1;
+    int32 count = 2;
+    string log_pattern = 3;
+    string date_time_layout = 4;
+}
+
+message TLogRQ {
+    string unit_id = 1;
+    int64 offset = 2;
+    string duration = 4;
+    string log_pattern = 5;
+    string date_time_layout = 6;
+}
+
+message LogRS {
+    string log = 1;
 }

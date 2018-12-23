@@ -1,87 +1,169 @@
 package rpc
 
 import (
-	"time"
+	"context"
 	"github.com/iobestar/logship/unit"
+	"github.com/iobestar/logship/utils/logger"
+	"io"
+	"regexp"
+	"time"
 )
 
-func NewLogService(manager *unit.Manager) (LogUnitServiceServer, error) {
-	return &DefaultLogService{
-		unitManager: manager,
+func NewLogService(logUnits unit.LogUnits) (LogUnitServiceServer, error) {
+	return &DefaultLogUnitService{
+		logUnits: logUnits,
 	}, nil
 }
 
-type DefaultLogService struct {
-	unitManager *unit.Manager
+type DefaultLogUnitService struct {
+	logUnits unit.LogUnits
 }
 
-func (dls *DefaultLogService) GetUnits(rq *Empty, stream LogUnitService_GetUnitsServer) error {
-
-	for _, luId := range dls.unitManager.GetLogUnitIds() {
-		stream.Send(&UnitRS{
-			Unit: luId,
-		})
+func (s *DefaultLogUnitService) NLines(rq *NLineRQ, stream LogUnitService_NLinesServer) error {
+	if u, ok := s.logUnits[rq.UnitId]; ok {
+		ctx, cancel := context.WithCancel(stream.Context())
+		lines, errors := u.StreamLines(ctx)
+		count := 0
+		for {
+			if count == int(rq.Count) {
+				cancel()
+				return nil
+			}
+			select {
+			case l, ok := <-lines:
+				if ok {
+					count++
+					err := stream.Send(&NLineRS{
+						Line: l,
+					})
+					if err == io.EOF {
+						return nil
+					}
+					if nil != err {
+						logger.Error.Println(err)
+						return err
+					}
+				} else {
+					return nil
+				}
+			case err, ok := <-errors:
+				if ok {
+					return err
+				}
+			case <-stream.Context().Done():
+				return nil
+			}
+		}
 	}
 	return nil
 }
 
-func (dls *DefaultLogService) GetNLines(rq *NLineRQ, stream LogUnitService_GetNLinesServer) error {
-	logUnit := dls.unitManager.GetLogUnit(rq.UnitId)
-	if nil == logUnit {
-		return nil
-	}
-
-	return logUnit.GetNLines(int(rq.Count), func(line string) error {
-		r := NLineRS{
-			Line: line,
+func (s *DefaultLogUnitService) NLogs(rq *NLogRQ, stream LogUnitService_NLogsServer) error {
+	if u, ok := s.logUnits[rq.UnitId]; ok {
+		logPattern, err := regexp.Compile(rq.LogPattern)
+		if nil != err {
+			return err
 		}
-		stream.Send(&r)
-		return nil
-	})
+		ctx, cancel := context.WithCancel(stream.Context())
+		logs, errors := u.StreamLogs(ctx, rq.DateTimeLayout, logPattern)
+		count := 0
+		for {
+			if count == int(rq.Count) {
+				cancel()
+				return nil
+			}
+			select {
+			case l, ok := <-logs:
+				if ok {
+					count++
+					err := stream.Send(&LogRS{
+						Log: l.Log(),
+					})
+					if err == io.EOF {
+						return nil
+					}
+					if nil != err {
+						logger.Error.Println(err)
+						return err
+					}
+				} else {
+					return nil
+				}
+			case err, ok := <-errors:
+				if ok {
+					return err
+				}
+			case <-stream.Context().Done():
+				return nil
+			}
+		}
+	}
+	return nil
 }
 
-func (dls *DefaultLogService) GetNLogs(rq *NLogRQ, stream LogUnitService_GetNLogsServer) error {
-
-	logUnit := dls.unitManager.GetLogUnit(rq.UnitId)
-	if nil == logUnit {
-		return nil
-	}
-
-	return logUnit.GetNLogs(int(rq.Count), func(logEntry *unit.LogEntry) error {
-		l := LogRS{
-			Payload: logEntry.Log(),
+func (s *DefaultLogUnitService) TLogs(rq *TLogRQ, stream LogUnitService_TLogsServer) error {
+	if u, ok := s.logUnits[rq.UnitId]; ok {
+		d, err := time.ParseDuration(rq.Duration)
+		if nil != err {
+			return err
 		}
-		stream.Send(&l)
-		return nil
-	})
+
+		logPattern, err := regexp.Compile(rq.LogPattern)
+		if nil != err {
+			return err
+		}
+
+		ctx, cancel := context.WithCancel(stream.Context())
+		logs, errors := u.StreamLogs(ctx, rq.DateTimeLayout, logPattern)
+		limit := time.Now().UnixNano() - d.Nanoseconds()
+		for {
+			select {
+			case l, ok := <-logs:
+				if ok {
+
+					if l.Timestamp < limit {
+						cancel()
+						return nil
+					}
+
+					err := stream.Send(&LogRS{
+						Log: l.Log(),
+					})
+					if err == io.EOF {
+						return nil
+					}
+					if nil != err {
+						logger.Error.Println(err)
+						return err
+					}
+				} else {
+					return nil
+				}
+			case err, ok := <-errors:
+				if ok {
+					return err
+				}
+			case <-stream.Context().Done():
+				return nil
+			}
+		}
+	}
+	return nil
 }
 
-func (dls *DefaultLogService) GetTLogs(rq *TLogRQ, stream LogUnitService_GetTLogsServer) error {
+func (s *DefaultLogUnitService) GetUnits(rq *Empty, stream LogUnitService_GetUnitsServer) error {
 
-	unitId := rq.UnitId
-
-	logUnit := dls.unitManager.GetLogUnit(unitId)
-	if nil == logUnit {
-		return nil
-	}
-
-	d, err := time.ParseDuration(rq.Duration)
-	if nil != err {
-		return err
-	}
-
-	offset := rq.Offset
-	if offset <= 0 {
-		offset = time.Now().UnixNano()
-	}
-
-	return logUnit.GetTLogs(d, offset, func(logEntry *unit.LogEntry) error {
-		l := LogRS{
-			Payload: logEntry.Log(),
+	for _, luId := range s.logUnits.GetLogUnitIds() {
+		err := stream.Send(&UnitRS{
+			Unit: luId,
+		})
+		if err == io.EOF {
+			return nil
 		}
-		stream.Send(&l)
-		return nil
-	})
-
+		if nil != err {
+			logger.Error.Println(err)
+			return err
+		}
+	}
 	return nil
 }

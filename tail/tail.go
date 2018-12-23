@@ -1,11 +1,13 @@
 package tail
 
 import (
-	"os"
-	"strings"
 	"context"
 	"github.com/iobestar/logship/utils/logger"
+	"os"
+	"strings"
 )
+
+const lineBuffer = 256
 
 func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 	fileInfo, err := file.Stat()
@@ -24,7 +26,7 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 		total  = int64(0)
 		remain = fileSize
 		index  = int64(0)
-		lines = make(chan string, 32)
+		lines  = make(chan string, lineBuffer)
 	)
 
 	go func() {
@@ -44,6 +46,7 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 
 			n, err := file.ReadAt(buf, index)
 			if nil != err {
+				// TODO: remove logging and return error
 				logger.Error.Printf("Error reading file: %s", err.Error())
 				return
 			}
@@ -76,7 +79,6 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 
 	return lines, nil
 }
-
 
 func reverse(s string) string {
 	r := []rune(s)

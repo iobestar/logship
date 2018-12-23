@@ -33,7 +33,7 @@ func (m *Empty) Reset()         { *m = Empty{} }
 func (m *Empty) String() string { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()    {}
 func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{0}
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{0}
 }
 func (m *Empty) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Empty.Unmarshal(m, b)
@@ -53,9 +53,133 @@ func (m *Empty) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Empty proto.InternalMessageInfo
 
+type UnitRS struct {
+	Unit                 string   `protobuf:"bytes,1,opt,name=unit,proto3" json:"unit,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UnitRS) Reset()         { *m = UnitRS{} }
+func (m *UnitRS) String() string { return proto.CompactTextString(m) }
+func (*UnitRS) ProtoMessage()    {}
+func (*UnitRS) Descriptor() ([]byte, []int) {
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{1}
+}
+func (m *UnitRS) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnitRS.Unmarshal(m, b)
+}
+func (m *UnitRS) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnitRS.Marshal(b, m, deterministic)
+}
+func (dst *UnitRS) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnitRS.Merge(dst, src)
+}
+func (m *UnitRS) XXX_Size() int {
+	return xxx_messageInfo_UnitRS.Size(m)
+}
+func (m *UnitRS) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnitRS.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UnitRS proto.InternalMessageInfo
+
+func (m *UnitRS) GetUnit() string {
+	if m != nil {
+		return m.Unit
+	}
+	return ""
+}
+
+type NLineRQ struct {
+	UnitId               string   `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
+	Count                int32    `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *NLineRQ) Reset()         { *m = NLineRQ{} }
+func (m *NLineRQ) String() string { return proto.CompactTextString(m) }
+func (*NLineRQ) ProtoMessage()    {}
+func (*NLineRQ) Descriptor() ([]byte, []int) {
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{2}
+}
+func (m *NLineRQ) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NLineRQ.Unmarshal(m, b)
+}
+func (m *NLineRQ) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NLineRQ.Marshal(b, m, deterministic)
+}
+func (dst *NLineRQ) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NLineRQ.Merge(dst, src)
+}
+func (m *NLineRQ) XXX_Size() int {
+	return xxx_messageInfo_NLineRQ.Size(m)
+}
+func (m *NLineRQ) XXX_DiscardUnknown() {
+	xxx_messageInfo_NLineRQ.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NLineRQ proto.InternalMessageInfo
+
+func (m *NLineRQ) GetUnitId() string {
+	if m != nil {
+		return m.UnitId
+	}
+	return ""
+}
+
+func (m *NLineRQ) GetCount() int32 {
+	if m != nil {
+		return m.Count
+	}
+	return 0
+}
+
+type NLineRS struct {
+	Line                 string   `protobuf:"bytes,1,opt,name=line,proto3" json:"line,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *NLineRS) Reset()         { *m = NLineRS{} }
+func (m *NLineRS) String() string { return proto.CompactTextString(m) }
+func (*NLineRS) ProtoMessage()    {}
+func (*NLineRS) Descriptor() ([]byte, []int) {
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{3}
+}
+func (m *NLineRS) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NLineRS.Unmarshal(m, b)
+}
+func (m *NLineRS) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NLineRS.Marshal(b, m, deterministic)
+}
+func (dst *NLineRS) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NLineRS.Merge(dst, src)
+}
+func (m *NLineRS) XXX_Size() int {
+	return xxx_messageInfo_NLineRS.Size(m)
+}
+func (m *NLineRS) XXX_DiscardUnknown() {
+	xxx_messageInfo_NLineRS.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NLineRS proto.InternalMessageInfo
+
+func (m *NLineRS) GetLine() string {
+	if m != nil {
+		return m.Line
+	}
+	return ""
+}
+
 type NLogRQ struct {
 	UnitId               string   `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
 	Count                int32    `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+	LogPattern           string   `protobuf:"bytes,3,opt,name=log_pattern,json=logPattern,proto3" json:"log_pattern,omitempty"`
+	DateTimeLayout       string   `protobuf:"bytes,4,opt,name=date_time_layout,json=dateTimeLayout,proto3" json:"date_time_layout,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -65,7 +189,7 @@ func (m *NLogRQ) Reset()         { *m = NLogRQ{} }
 func (m *NLogRQ) String() string { return proto.CompactTextString(m) }
 func (*NLogRQ) ProtoMessage()    {}
 func (*NLogRQ) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{1}
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{4}
 }
 func (m *NLogRQ) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NLogRQ.Unmarshal(m, b)
@@ -99,10 +223,26 @@ func (m *NLogRQ) GetCount() int32 {
 	return 0
 }
 
+func (m *NLogRQ) GetLogPattern() string {
+	if m != nil {
+		return m.LogPattern
+	}
+	return ""
+}
+
+func (m *NLogRQ) GetDateTimeLayout() string {
+	if m != nil {
+		return m.DateTimeLayout
+	}
+	return ""
+}
+
 type TLogRQ struct {
 	UnitId               string   `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
 	Offset               int64    `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
-	Duration             string   `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
+	Duration             string   `protobuf:"bytes,4,opt,name=duration,proto3" json:"duration,omitempty"`
+	LogPattern           string   `protobuf:"bytes,5,opt,name=log_pattern,json=logPattern,proto3" json:"log_pattern,omitempty"`
+	DateTimeLayout       string   `protobuf:"bytes,6,opt,name=date_time_layout,json=dateTimeLayout,proto3" json:"date_time_layout,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -112,7 +252,7 @@ func (m *TLogRQ) Reset()         { *m = TLogRQ{} }
 func (m *TLogRQ) String() string { return proto.CompactTextString(m) }
 func (*TLogRQ) ProtoMessage()    {}
 func (*TLogRQ) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{2}
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{5}
 }
 func (m *TLogRQ) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TLogRQ.Unmarshal(m, b)
@@ -153,46 +293,22 @@ func (m *TLogRQ) GetDuration() string {
 	return ""
 }
 
-type FLogRQ struct {
-	UnitId               string   `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *FLogRQ) Reset()         { *m = FLogRQ{} }
-func (m *FLogRQ) String() string { return proto.CompactTextString(m) }
-func (*FLogRQ) ProtoMessage()    {}
-func (*FLogRQ) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{3}
-}
-func (m *FLogRQ) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FLogRQ.Unmarshal(m, b)
-}
-func (m *FLogRQ) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FLogRQ.Marshal(b, m, deterministic)
-}
-func (dst *FLogRQ) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FLogRQ.Merge(dst, src)
-}
-func (m *FLogRQ) XXX_Size() int {
-	return xxx_messageInfo_FLogRQ.Size(m)
-}
-func (m *FLogRQ) XXX_DiscardUnknown() {
-	xxx_messageInfo_FLogRQ.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FLogRQ proto.InternalMessageInfo
-
-func (m *FLogRQ) GetUnitId() string {
+func (m *TLogRQ) GetLogPattern() string {
 	if m != nil {
-		return m.UnitId
+		return m.LogPattern
+	}
+	return ""
+}
+
+func (m *TLogRQ) GetDateTimeLayout() string {
+	if m != nil {
+		return m.DateTimeLayout
 	}
 	return ""
 }
 
 type LogRS struct {
-	Payload              string   `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	Log                  string   `protobuf:"bytes,1,opt,name=log,proto3" json:"log,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -202,7 +318,7 @@ func (m *LogRS) Reset()         { *m = LogRS{} }
 func (m *LogRS) String() string { return proto.CompactTextString(m) }
 func (*LogRS) ProtoMessage()    {}
 func (*LogRS) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{4}
+	return fileDescriptor_grpc_d5c03fbe776e3e0b, []int{6}
 }
 func (m *LogRS) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LogRS.Unmarshal(m, b)
@@ -222,152 +338,21 @@ func (m *LogRS) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LogRS proto.InternalMessageInfo
 
-func (m *LogRS) GetPayload() string {
+func (m *LogRS) GetLog() string {
 	if m != nil {
-		return m.Payload
-	}
-	return ""
-}
-
-type NLineRQ struct {
-	UnitId               string   `protobuf:"bytes,1,opt,name=unit_id,json=unitId,proto3" json:"unit_id,omitempty"`
-	Count                int32    `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *NLineRQ) Reset()         { *m = NLineRQ{} }
-func (m *NLineRQ) String() string { return proto.CompactTextString(m) }
-func (*NLineRQ) ProtoMessage()    {}
-func (*NLineRQ) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{5}
-}
-func (m *NLineRQ) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NLineRQ.Unmarshal(m, b)
-}
-func (m *NLineRQ) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NLineRQ.Marshal(b, m, deterministic)
-}
-func (dst *NLineRQ) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NLineRQ.Merge(dst, src)
-}
-func (m *NLineRQ) XXX_Size() int {
-	return xxx_messageInfo_NLineRQ.Size(m)
-}
-func (m *NLineRQ) XXX_DiscardUnknown() {
-	xxx_messageInfo_NLineRQ.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NLineRQ proto.InternalMessageInfo
-
-func (m *NLineRQ) GetUnitId() string {
-	if m != nil {
-		return m.UnitId
-	}
-	return ""
-}
-
-func (m *NLineRQ) GetCount() int32 {
-	if m != nil {
-		return m.Count
-	}
-	return 0
-}
-
-type NLineRS struct {
-	Line                 string   `protobuf:"bytes,1,opt,name=line,proto3" json:"line,omitempty"`
-	Count                int32    `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *NLineRS) Reset()         { *m = NLineRS{} }
-func (m *NLineRS) String() string { return proto.CompactTextString(m) }
-func (*NLineRS) ProtoMessage()    {}
-func (*NLineRS) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{6}
-}
-func (m *NLineRS) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NLineRS.Unmarshal(m, b)
-}
-func (m *NLineRS) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NLineRS.Marshal(b, m, deterministic)
-}
-func (dst *NLineRS) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NLineRS.Merge(dst, src)
-}
-func (m *NLineRS) XXX_Size() int {
-	return xxx_messageInfo_NLineRS.Size(m)
-}
-func (m *NLineRS) XXX_DiscardUnknown() {
-	xxx_messageInfo_NLineRS.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NLineRS proto.InternalMessageInfo
-
-func (m *NLineRS) GetLine() string {
-	if m != nil {
-		return m.Line
-	}
-	return ""
-}
-
-func (m *NLineRS) GetCount() int32 {
-	if m != nil {
-		return m.Count
-	}
-	return 0
-}
-
-type UnitRS struct {
-	Unit                 string   `protobuf:"bytes,1,opt,name=unit,proto3" json:"unit,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *UnitRS) Reset()         { *m = UnitRS{} }
-func (m *UnitRS) String() string { return proto.CompactTextString(m) }
-func (*UnitRS) ProtoMessage()    {}
-func (*UnitRS) Descriptor() ([]byte, []int) {
-	return fileDescriptor_grpc_8ddaa151b9e2edda, []int{7}
-}
-func (m *UnitRS) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UnitRS.Unmarshal(m, b)
-}
-func (m *UnitRS) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UnitRS.Marshal(b, m, deterministic)
-}
-func (dst *UnitRS) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UnitRS.Merge(dst, src)
-}
-func (m *UnitRS) XXX_Size() int {
-	return xxx_messageInfo_UnitRS.Size(m)
-}
-func (m *UnitRS) XXX_DiscardUnknown() {
-	xxx_messageInfo_UnitRS.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UnitRS proto.InternalMessageInfo
-
-func (m *UnitRS) GetUnit() string {
-	if m != nil {
-		return m.Unit
+		return m.Log
 	}
 	return ""
 }
 
 func init() {
 	proto.RegisterType((*Empty)(nil), "rpc.Empty")
-	proto.RegisterType((*NLogRQ)(nil), "rpc.NLogRQ")
-	proto.RegisterType((*TLogRQ)(nil), "rpc.TLogRQ")
-	proto.RegisterType((*FLogRQ)(nil), "rpc.FLogRQ")
-	proto.RegisterType((*LogRS)(nil), "rpc.LogRS")
+	proto.RegisterType((*UnitRS)(nil), "rpc.UnitRS")
 	proto.RegisterType((*NLineRQ)(nil), "rpc.NLineRQ")
 	proto.RegisterType((*NLineRS)(nil), "rpc.NLineRS")
-	proto.RegisterType((*UnitRS)(nil), "rpc.UnitRS")
+	proto.RegisterType((*NLogRQ)(nil), "rpc.NLogRQ")
+	proto.RegisterType((*TLogRQ)(nil), "rpc.TLogRQ")
+	proto.RegisterType((*LogRS)(nil), "rpc.LogRS")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -383,9 +368,9 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type LogUnitServiceClient interface {
 	GetUnits(ctx context.Context, in *Empty, opts ...grpc.CallOption) (LogUnitService_GetUnitsClient, error)
-	GetNLogs(ctx context.Context, in *NLogRQ, opts ...grpc.CallOption) (LogUnitService_GetNLogsClient, error)
-	GetTLogs(ctx context.Context, in *TLogRQ, opts ...grpc.CallOption) (LogUnitService_GetTLogsClient, error)
-	GetNLines(ctx context.Context, in *NLineRQ, opts ...grpc.CallOption) (LogUnitService_GetNLinesClient, error)
+	NLines(ctx context.Context, in *NLineRQ, opts ...grpc.CallOption) (LogUnitService_NLinesClient, error)
+	NLogs(ctx context.Context, in *NLogRQ, opts ...grpc.CallOption) (LogUnitService_NLogsClient, error)
+	TLogs(ctx context.Context, in *TLogRQ, opts ...grpc.CallOption) (LogUnitService_TLogsClient, error)
 }
 
 type logUnitServiceClient struct {
@@ -428,12 +413,12 @@ func (x *logUnitServiceGetUnitsClient) Recv() (*UnitRS, error) {
 	return m, nil
 }
 
-func (c *logUnitServiceClient) GetNLogs(ctx context.Context, in *NLogRQ, opts ...grpc.CallOption) (LogUnitService_GetNLogsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_LogUnitService_serviceDesc.Streams[1], "/rpc.LogUnitService/GetNLogs", opts...)
+func (c *logUnitServiceClient) NLines(ctx context.Context, in *NLineRQ, opts ...grpc.CallOption) (LogUnitService_NLinesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_LogUnitService_serviceDesc.Streams[1], "/rpc.LogUnitService/NLines", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &logUnitServiceGetNLogsClient{stream}
+	x := &logUnitServiceNLinesClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -443,81 +428,81 @@ func (c *logUnitServiceClient) GetNLogs(ctx context.Context, in *NLogRQ, opts ..
 	return x, nil
 }
 
-type LogUnitService_GetNLogsClient interface {
-	Recv() (*LogRS, error)
-	grpc.ClientStream
-}
-
-type logUnitServiceGetNLogsClient struct {
-	grpc.ClientStream
-}
-
-func (x *logUnitServiceGetNLogsClient) Recv() (*LogRS, error) {
-	m := new(LogRS)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *logUnitServiceClient) GetTLogs(ctx context.Context, in *TLogRQ, opts ...grpc.CallOption) (LogUnitService_GetTLogsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_LogUnitService_serviceDesc.Streams[2], "/rpc.LogUnitService/GetTLogs", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &logUnitServiceGetTLogsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type LogUnitService_GetTLogsClient interface {
-	Recv() (*LogRS, error)
-	grpc.ClientStream
-}
-
-type logUnitServiceGetTLogsClient struct {
-	grpc.ClientStream
-}
-
-func (x *logUnitServiceGetTLogsClient) Recv() (*LogRS, error) {
-	m := new(LogRS)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *logUnitServiceClient) GetNLines(ctx context.Context, in *NLineRQ, opts ...grpc.CallOption) (LogUnitService_GetNLinesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_LogUnitService_serviceDesc.Streams[3], "/rpc.LogUnitService/GetNLines", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &logUnitServiceGetNLinesClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type LogUnitService_GetNLinesClient interface {
+type LogUnitService_NLinesClient interface {
 	Recv() (*NLineRS, error)
 	grpc.ClientStream
 }
 
-type logUnitServiceGetNLinesClient struct {
+type logUnitServiceNLinesClient struct {
 	grpc.ClientStream
 }
 
-func (x *logUnitServiceGetNLinesClient) Recv() (*NLineRS, error) {
+func (x *logUnitServiceNLinesClient) Recv() (*NLineRS, error) {
 	m := new(NLineRS)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *logUnitServiceClient) NLogs(ctx context.Context, in *NLogRQ, opts ...grpc.CallOption) (LogUnitService_NLogsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_LogUnitService_serviceDesc.Streams[2], "/rpc.LogUnitService/NLogs", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &logUnitServiceNLogsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type LogUnitService_NLogsClient interface {
+	Recv() (*LogRS, error)
+	grpc.ClientStream
+}
+
+type logUnitServiceNLogsClient struct {
+	grpc.ClientStream
+}
+
+func (x *logUnitServiceNLogsClient) Recv() (*LogRS, error) {
+	m := new(LogRS)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *logUnitServiceClient) TLogs(ctx context.Context, in *TLogRQ, opts ...grpc.CallOption) (LogUnitService_TLogsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_LogUnitService_serviceDesc.Streams[3], "/rpc.LogUnitService/TLogs", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &logUnitServiceTLogsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type LogUnitService_TLogsClient interface {
+	Recv() (*LogRS, error)
+	grpc.ClientStream
+}
+
+type logUnitServiceTLogsClient struct {
+	grpc.ClientStream
+}
+
+func (x *logUnitServiceTLogsClient) Recv() (*LogRS, error) {
+	m := new(LogRS)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -527,9 +512,9 @@ func (x *logUnitServiceGetNLinesClient) Recv() (*NLineRS, error) {
 // LogUnitServiceServer is the server API for LogUnitService service.
 type LogUnitServiceServer interface {
 	GetUnits(*Empty, LogUnitService_GetUnitsServer) error
-	GetNLogs(*NLogRQ, LogUnitService_GetNLogsServer) error
-	GetTLogs(*TLogRQ, LogUnitService_GetTLogsServer) error
-	GetNLines(*NLineRQ, LogUnitService_GetNLinesServer) error
+	NLines(*NLineRQ, LogUnitService_NLinesServer) error
+	NLogs(*NLogRQ, LogUnitService_NLogsServer) error
+	TLogs(*TLogRQ, LogUnitService_TLogsServer) error
 }
 
 func RegisterLogUnitServiceServer(s *grpc.Server, srv LogUnitServiceServer) {
@@ -557,66 +542,66 @@ func (x *logUnitServiceGetUnitsServer) Send(m *UnitRS) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _LogUnitService_GetNLogs_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NLogRQ)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(LogUnitServiceServer).GetNLogs(m, &logUnitServiceGetNLogsServer{stream})
-}
-
-type LogUnitService_GetNLogsServer interface {
-	Send(*LogRS) error
-	grpc.ServerStream
-}
-
-type logUnitServiceGetNLogsServer struct {
-	grpc.ServerStream
-}
-
-func (x *logUnitServiceGetNLogsServer) Send(m *LogRS) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _LogUnitService_GetTLogs_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(TLogRQ)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(LogUnitServiceServer).GetTLogs(m, &logUnitServiceGetTLogsServer{stream})
-}
-
-type LogUnitService_GetTLogsServer interface {
-	Send(*LogRS) error
-	grpc.ServerStream
-}
-
-type logUnitServiceGetTLogsServer struct {
-	grpc.ServerStream
-}
-
-func (x *logUnitServiceGetTLogsServer) Send(m *LogRS) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _LogUnitService_GetNLines_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _LogUnitService_NLines_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(NLineRQ)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(LogUnitServiceServer).GetNLines(m, &logUnitServiceGetNLinesServer{stream})
+	return srv.(LogUnitServiceServer).NLines(m, &logUnitServiceNLinesServer{stream})
 }
 
-type LogUnitService_GetNLinesServer interface {
+type LogUnitService_NLinesServer interface {
 	Send(*NLineRS) error
 	grpc.ServerStream
 }
 
-type logUnitServiceGetNLinesServer struct {
+type logUnitServiceNLinesServer struct {
 	grpc.ServerStream
 }
 
-func (x *logUnitServiceGetNLinesServer) Send(m *NLineRS) error {
+func (x *logUnitServiceNLinesServer) Send(m *NLineRS) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _LogUnitService_NLogs_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(NLogRQ)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(LogUnitServiceServer).NLogs(m, &logUnitServiceNLogsServer{stream})
+}
+
+type LogUnitService_NLogsServer interface {
+	Send(*LogRS) error
+	grpc.ServerStream
+}
+
+type logUnitServiceNLogsServer struct {
+	grpc.ServerStream
+}
+
+func (x *logUnitServiceNLogsServer) Send(m *LogRS) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _LogUnitService_TLogs_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(TLogRQ)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(LogUnitServiceServer).TLogs(m, &logUnitServiceTLogsServer{stream})
+}
+
+type LogUnitService_TLogsServer interface {
+	Send(*LogRS) error
+	grpc.ServerStream
+}
+
+type logUnitServiceTLogsServer struct {
+	grpc.ServerStream
+}
+
+func (x *logUnitServiceTLogsServer) Send(m *LogRS) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -631,46 +616,49 @@ var _LogUnitService_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "GetNLogs",
-			Handler:       _LogUnitService_GetNLogs_Handler,
+			StreamName:    "NLines",
+			Handler:       _LogUnitService_NLines_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "GetTLogs",
-			Handler:       _LogUnitService_GetTLogs_Handler,
+			StreamName:    "NLogs",
+			Handler:       _LogUnitService_NLogs_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "GetNLines",
-			Handler:       _LogUnitService_GetNLines_Handler,
+			StreamName:    "TLogs",
+			Handler:       _LogUnitService_TLogs_Handler,
 			ServerStreams: true,
 		},
 	},
 	Metadata: "grpc.proto",
 }
 
-func init() { proto.RegisterFile("grpc.proto", fileDescriptor_grpc_8ddaa151b9e2edda) }
+func init() { proto.RegisterFile("grpc.proto", fileDescriptor_grpc_d5c03fbe776e3e0b) }
 
-var fileDescriptor_grpc_8ddaa151b9e2edda = []byte{
-	// 313 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x4f, 0x4b, 0xc3, 0x30,
-	0x18, 0xc6, 0x89, 0xb3, 0xe9, 0xf6, 0x2a, 0x3b, 0x04, 0xd1, 0x52, 0x3d, 0x6c, 0x01, 0x61, 0x5e,
-	0xc6, 0x70, 0x07, 0x3d, 0x0f, 0x54, 0x84, 0x32, 0xb4, 0xdd, 0xce, 0x52, 0xdb, 0xac, 0x06, 0x6a,
-	0x12, 0xda, 0x54, 0xd8, 0xb7, 0xf2, 0x23, 0x4a, 0x92, 0x76, 0xec, 0xe0, 0x1f, 0xbc, 0xbd, 0x4f,
-	0xdf, 0xe7, 0xf7, 0x40, 0xdf, 0x27, 0x00, 0x45, 0xa5, 0xb2, 0xa9, 0xaa, 0xa4, 0x96, 0xa4, 0x57,
-	0xa9, 0x8c, 0xfa, 0xe0, 0xdd, 0xbd, 0x2b, 0xbd, 0xa5, 0x37, 0x80, 0x97, 0x91, 0x2c, 0xe2, 0x67,
-	0x72, 0x06, 0x7e, 0x23, 0xb8, 0x7e, 0xe1, 0x79, 0x80, 0x46, 0x68, 0x32, 0x88, 0xb1, 0x91, 0x8f,
-	0x39, 0x39, 0x01, 0x2f, 0x93, 0x8d, 0xd0, 0xc1, 0xc1, 0x08, 0x4d, 0xbc, 0xd8, 0x09, 0xba, 0x06,
-	0xbc, 0xfa, 0x03, 0x3c, 0x05, 0x2c, 0x37, 0x9b, 0x9a, 0x39, 0xb2, 0x17, 0xb7, 0x8a, 0x84, 0xd0,
-	0xcf, 0x9b, 0x2a, 0xd5, 0x5c, 0x8a, 0xa0, 0x67, 0x89, 0x9d, 0xa6, 0x63, 0xc0, 0xf7, 0xbf, 0xc7,
-	0xd2, 0x31, 0x78, 0xc6, 0x91, 0x90, 0x00, 0x7c, 0x95, 0x6e, 0x4b, 0x99, 0x76, 0x8e, 0x4e, 0xd2,
-	0x5b, 0xf0, 0x97, 0x11, 0x17, 0xec, 0xff, 0xbf, 0x35, 0xef, 0xc8, 0x84, 0x10, 0x38, 0x2c, 0xb9,
-	0x60, 0x2d, 0x66, 0xe7, 0x1f, 0xa0, 0x0b, 0xc0, 0x6b, 0xc1, 0xb5, 0x63, 0x4c, 0x7c, 0xc7, 0x98,
-	0xf9, 0xfa, 0x13, 0xc1, 0x30, 0x92, 0x85, 0x71, 0x24, 0xac, 0xfa, 0xe0, 0x19, 0x23, 0x97, 0xd0,
-	0x7f, 0x60, 0xda, 0x7c, 0xa9, 0x09, 0x4c, 0x4d, 0x37, 0xb6, 0x8d, 0xf0, 0xc8, 0xce, 0x2e, 0x6b,
-	0x86, 0x5a, 0x9b, 0xe9, 0xa7, 0x26, 0x6e, 0xe5, 0xba, 0x0a, 0x1d, 0x63, 0xaf, 0xb0, 0xb3, 0xad,
-	0xf6, 0x6c, 0xab, 0xef, 0x6c, 0x57, 0x30, 0xb0, 0x69, 0x5c, 0xb0, 0x9a, 0x1c, 0xb7, 0x71, 0xf6,
-	0x48, 0xe1, 0xbe, 0x4a, 0x66, 0x68, 0x71, 0x0e, 0x43, 0x2e, 0xa7, 0xa5, 0x2c, 0xea, 0x37, 0xae,
-	0xcc, 0x6e, 0xe1, 0x47, 0x4e, 0x3c, 0xa1, 0x57, 0x6c, 0xdf, 0xd1, 0xfc, 0x2b, 0x00, 0x00, 0xff,
-	0xff, 0xcb, 0x67, 0x70, 0xf6, 0x55, 0x02, 0x00, 0x00,
+var fileDescriptor_grpc_d5c03fbe776e3e0b = []byte{
+	// 362 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0x41, 0x4b, 0xf3, 0x40,
+	0x14, 0x64, 0xbf, 0x34, 0x49, 0xbf, 0xd7, 0x8f, 0x52, 0x96, 0x0f, 0x8d, 0x51, 0xb1, 0x04, 0x94,
+	0x9e, 0x8a, 0xe8, 0xc5, 0x73, 0x41, 0x44, 0x08, 0xa5, 0xa6, 0xf1, 0x1c, 0x62, 0xb2, 0x8d, 0x0b,
+	0xe9, 0x6e, 0x48, 0x36, 0x42, 0xaf, 0xfe, 0x12, 0x6f, 0xfe, 0x4d, 0x79, 0xbb, 0xa9, 0x14, 0x29,
+	0xa8, 0xb7, 0x37, 0xf3, 0x66, 0x87, 0xe1, 0xcd, 0x02, 0x14, 0x75, 0x95, 0x4d, 0xab, 0x5a, 0x2a,
+	0x49, 0xad, 0xba, 0xca, 0x02, 0x17, 0xec, 0xdb, 0x75, 0xa5, 0x36, 0xc1, 0x09, 0x38, 0x8f, 0x82,
+	0xab, 0x68, 0x49, 0x29, 0xf4, 0x5a, 0xc1, 0x95, 0x47, 0xc6, 0x64, 0xf2, 0x37, 0xd2, 0x73, 0x70,
+	0x03, 0xee, 0x3c, 0xe4, 0x82, 0x45, 0x0f, 0xf4, 0x10, 0x5c, 0xa4, 0x12, 0x9e, 0x77, 0x0a, 0x07,
+	0xe1, 0x7d, 0x4e, 0xff, 0x83, 0x9d, 0xc9, 0x56, 0x28, 0xef, 0xcf, 0x98, 0x4c, 0xec, 0xc8, 0x80,
+	0xe0, 0x74, 0xfb, 0x52, 0x1b, 0x97, 0x5c, 0xb0, 0xad, 0x31, 0xce, 0xc1, 0x2b, 0x01, 0x67, 0x1e,
+	0xca, 0xe2, 0xd7, 0xc6, 0xf4, 0x0c, 0x06, 0xa5, 0x2c, 0x92, 0x2a, 0x55, 0x8a, 0xd5, 0xc2, 0xb3,
+	0xf4, 0x13, 0x28, 0x65, 0xb1, 0x30, 0x0c, 0x9d, 0xc0, 0x28, 0x4f, 0x15, 0x4b, 0x14, 0x5f, 0xb3,
+	0xa4, 0x4c, 0x37, 0xb2, 0x55, 0x5e, 0x4f, 0xab, 0x86, 0xc8, 0xc7, 0x7c, 0xcd, 0x42, 0xcd, 0x06,
+	0x6f, 0x04, 0x9c, 0xf8, 0x9b, 0x10, 0x07, 0xe0, 0xc8, 0xd5, 0xaa, 0x61, 0x26, 0x85, 0x15, 0x75,
+	0x88, 0xfa, 0xd0, 0xcf, 0xdb, 0x3a, 0x55, 0x5c, 0x8a, 0xce, 0xfd, 0x13, 0x7f, 0x8d, 0x68, 0xff,
+	0x28, 0xa2, 0xb3, 0x37, 0xe2, 0x11, 0xd8, 0x18, 0x70, 0x49, 0x47, 0x60, 0x95, 0xb2, 0xe8, 0xc2,
+	0xe1, 0x78, 0xf5, 0x4e, 0x60, 0x18, 0xca, 0x02, 0xdb, 0x5b, 0xb2, 0xfa, 0x85, 0x67, 0x8c, 0x9e,
+	0x43, 0xff, 0x8e, 0x29, 0x64, 0x1a, 0x0a, 0x53, 0xac, 0x5c, 0x97, 0xec, 0x0f, 0xf4, 0x6c, 0x7a,
+	0xbe, 0x24, 0xf4, 0x02, 0x6f, 0xcf, 0x05, 0x6b, 0xe8, 0x3f, 0xbd, 0xe8, 0x2a, 0xf6, 0x77, 0x11,
+	0xea, 0x02, 0xb0, 0xb1, 0xa3, 0x86, 0x0e, 0xba, 0x05, 0x9e, 0xca, 0x37, 0xc6, 0x3a, 0x95, 0xd1,
+	0xc4, 0x3b, 0x9a, 0x78, 0x8f, 0x66, 0x76, 0x0c, 0x43, 0x2e, 0xa7, 0xa5, 0x2c, 0x9a, 0x67, 0x5e,
+	0xe1, 0x66, 0xe6, 0x86, 0x06, 0x2c, 0xc8, 0x93, 0xa3, 0x7f, 0xe5, 0xf5, 0x47, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x09, 0x98, 0x65, 0xfe, 0xa3, 0x02, 0x00, 0x00,
 }

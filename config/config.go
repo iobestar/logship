@@ -6,12 +6,11 @@ import (
 )
 
 type Config struct {
-	LogUnits []LogUnitConfig `yaml:"log_units"`
+	LogReaders []LogReaderConfig `yaml:"log_readers"`
 }
 
-type LogUnitConfig struct {
+type LogReaderConfig struct {
 	Id             string `yaml:"id"`
-	FilePattern    string `yaml:"file_pattern"`
 	LogPattern     string `yaml:"log_pattern"`
 	DateTimeLayout string `yaml:"date_time_layout"`
 }
@@ -20,24 +19,39 @@ var (
 	defaultLogPattern     = "^(?P<datetime>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(?P<level>\\w+).*"
 	defaultDateTimeLayout = "2006-01-02 15:04:05.000"
 
-	defaultLogUnit = LogUnitConfig{
+	defaultLogReader = LogReaderConfig{
+		Id:"default",
 		LogPattern:     defaultLogPattern,
 		DateTimeLayout: defaultDateTimeLayout,
 	}
 )
 
-func (lu *LogUnitConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (lr *LogReaderConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
-	*lu = defaultLogUnit
+	*lr = defaultLogReader
 
-	type plain LogUnitConfig
-	if err := unmarshal((*plain)(lu)); err != nil {
+	type plain LogReaderConfig
+	if err := unmarshal((*plain)(lr)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func Parse(filename string) (*Config, error) {
+func (c *Config) GetLogReaderConfig(logReaderConfigId string) LogReaderConfig {
+
+	if len(c.LogReaders) == 0 {
+		return defaultLogReader
+	}
+
+	for _, lrc := range c.LogReaders {
+		if lrc.Id == logReaderConfigId {
+			return lrc
+		}
+	}
+	return defaultLogReader
+}
+
+func ParseConfig(filename string) (*Config, error) {
 
 	bytes, err := getBytes(filename)
 	if nil != err {

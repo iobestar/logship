@@ -1,7 +1,0 @@
-log_units:
-  - id: rs_replication_log
-    file_pattern: "replication.log"
-  - id: rs_error_log
-    file_pattern: "error.log"
-    log_pattern: "any"
-    date_time_layout: "42"

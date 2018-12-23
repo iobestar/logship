@@ -1,23 +1,22 @@
 package main
 
 import (
-	"os"
-	pb "github.com/iobestar/logship/unit/rpc"
-	"gopkg.in/alecthomas/kingpin.v2"
-	"google.golang.org/grpc"
-	"net"
-	"fmt"
 	"context"
-	"io"
-	"github.com/iobestar/logship/unit"
+	cl "github.com/iobestar/logship/client"
 	"github.com/iobestar/logship/config"
-	"syscall"
-	"os/signal"
+	"github.com/iobestar/logship/unit"
+	pb "github.com/iobestar/logship/unit/rpc"
 	"github.com/iobestar/logship/utils/logger"
-	"github.com/soheilhy/cmux"
-	"net/http"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/soheilhy/cmux"
+	"google.golang.org/grpc"
+	"gopkg.in/alecthomas/kingpin.v2"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 )
 
 var (
@@ -28,6 +27,7 @@ var (
 	// server
 	server  = app.Command("server", "Logship server mode")
 	address = server.Flag("address", "Logship server address").Default("0.0.0.0:3340").String()
+	logUnit = server.Flag("logunit", "Logship server log units").Required().Strings();
 
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
@@ -51,26 +51,17 @@ func main() {
 
 		logger.Info.Println("Logship starting in mode: SERVER")
 
-		cfg, err := config.Parse(*configPath)
-		if nil != err {
-			logger.Error.Fatal(err)
-		}
-		logger.Info.Printf("Parsed configuration: %s", *configPath)
+		logUnits := unit.NewLogUnits(*logUnit)
+		logger.Info.Printf("Log units: %v", logUnits.GetLogUnitIds())
 
-		unitManager, err := unit.NewManager(*cfg)
-		if nil != err {
-			logger.Error.Fatal(err)
-		}
-		logger.Info.Printf("Created log unit manager: %v", unitManager.GetLogUnitIds())
-
-		logService, err := pb.NewLogService(unitManager)
+		logService, err := pb.NewLogService(logUnits)
 		if nil != err {
 			logger.Error.Fatal(err)
 		}
 
-		grpcServer := grpc.NewServer()
+		grpcS := grpc.NewServer()
 
-		pb.RegisterLogUnitServiceServer(grpcServer, logService)
+		pb.RegisterLogUnitServiceServer(grpcS, logService)
 
 		lis, err := net.Listen("tcp", *address)
 		if err != nil {
@@ -83,7 +74,7 @@ func main() {
 
 		go func() {
 			logger.Info.Printf("Starting RPC server: %s", *address)
-			if err = grpcServer.Serve(grpcL); err != cmux.ErrListenerClosed && err != nil {
+			if err = grpcS.Serve(grpcL); err != cmux.ErrListenerClosed && err != nil {
 				logger.Error.Fatal(err)
 			}
 		}()
@@ -111,147 +102,56 @@ func main() {
 		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 		select {
 		case <-sig:
-			httpS.Shutdown(context.Background())
-			grpcServer.GracefulStop()
+			err = httpS.Shutdown(context.Background())
+			if nil != err {
+				logger.Warning.Println(err)
+			}
+			grpcS.GracefulStop()
 		}
 	case units.FullCommand():
-		cli := NewLogshipClient((*targets)[0])
-		defer cli.Close()
+		targets := cl.CreateTargets(*targets)
+		defer targets.Close()
 
-		unitStream, err := cli.GetUnits(context.Background(), &pb.Empty{})
-		if nil!= err {
-			logger.Error.Fatalf("Error executing units command: %s", err.Error())
-		}
-		for {
-			u, err := unitStream.Recv()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(u.Unit)
-		}
-	case nLog.FullCommand():
-
-		cli := NewLogshipClient((*targets)[0])
-		defer cli.Close()
-
-		logStream, err := cli.GetNLogs(context.Background(), &pb.NLogRQ{
-			UnitId: *nLogUnitId,
-			Count:  int32(*nLogCount),
-		})
-		if nil!= err {
-			logger.Error.Fatalf("Error executing nlogs command: %s", err.Error())
-		}
-
-		var result []string
-		for {
-			logEntry, err := logStream.Recv()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				panic(err)
-			}
-			result = append(result, logEntry.Payload)
-		}
-		for i := len(result); i > 0; i = i - 1 {
-			fmt.Println(result[i-1])
-		}
-	case tLog.FullCommand():
-
-		cli := NewLogshipClient((*targets)[0])
-		defer cli.Close()
-
-		logStream, err := cli.GetTLogs(context.Background(), &pb.TLogRQ{
-			UnitId:   *tLogUnitId,
-			Duration: *tLogDuration,
-			Offset:   0,
-		})
-		if nil!= err {
-			logger.Error.Fatalf("Error executing tlogs command: %s", err.Error())
-		}
-
-		var result []string
-		for {
-			logEntry, err := logStream.Recv()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				panic(err)
-			}
-			result = append(result, logEntry.Payload)
-		}
-		for i := len(result); i > 0; i = i - 1 {
-			fmt.Println(result[i-1])
+		err := cl.Units(context.Background(), targets)
+		if nil != err {
+			logger.Error.Fatalf("error executing units command: %s", err.Error())
 		}
 	case nLine.FullCommand():
-		cli := NewLogshipClient((*targets)[0])
-		defer cli.Close()
+		targets := cl.CreateTargets(*targets)
+		defer targets.Close()
 
-		lineStream, err := cli.GetNLines(context.Background(), &pb.NLineRQ{
-			UnitId: *nLineUnitId,
-			Count:  int32(*nLineCount),
-		})
-		if nil!= err {
-			logger.Error.Fatalf("Error executing nlines command: %s", err.Error())
+		err := cl.Lines(context.Background(), targets, *nLineUnitId, *nLineCount)
+		if nil != err {
+			logger.Error.Fatalf("error executing units command: %s", err.Error())
+		}
+	case nLog.FullCommand():
+		targets := cl.CreateTargets(*targets)
+		defer targets.Close()
+
+		cfg, err := config.ParseConfig(*configPath)
+		if nil != err {
+			logger.Error.Fatalf("error parsing configuration: %s", err.Error())
 		}
 
-		var result []string
-		for {
-			rs, err := lineStream.Recv()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				panic(err)
-			}
-			result = append(result, rs.Line)
+		// TODO: pass id as command parameter
+		err = cl.NLogs(context.Background(), targets, *nLogUnitId, *nLogCount, cfg.GetLogReaderConfig("default"))
+		if nil != err {
+			logger.Error.Fatalf("error executing nlogs command: %s", err.Error())
 		}
-		for i := len(result); i > 0; i = i - 1 {
-			fmt.Println(result[i-1])
+	case tLog.FullCommand():
+		targets := cl.CreateTargets(*targets)
+		defer targets.Close()
+
+		cfg, err := config.ParseConfig(*configPath)
+		if nil != err {
+			logger.Error.Fatalf("error parsing configuration: %s", err.Error())
+		}
+
+		// TODO: pass id as command parameter
+		err = cl.TLogs(context.Background(), targets, *tLogUnitId, *tLogDuration, cfg.GetLogReaderConfig("default"))
+		if nil != err {
+			logger.Error.Fatalf("error executing nlogs command: %s", err.Error())
 		}
 	default:
-	}
-}
-
-type LogshipClient struct {
-	cnn      *grpc.ClientConn
-	delegate pb.LogUnitServiceClient
-}
-
-func (lc *LogshipClient) GetNLogs(ctx context.Context, in *pb.NLogRQ, opts ...grpc.CallOption) (pb.LogUnitService_GetNLogsClient, error) {
-	return lc.delegate.GetNLogs(ctx, in, opts...)
-}
-
-func (lc *LogshipClient) GetTLogs(ctx context.Context, in *pb.TLogRQ, opts ...grpc.CallOption) (pb.LogUnitService_GetTLogsClient, error) {
-	return lc.delegate.GetTLogs(ctx, in, opts...)
-}
-
-func (lc *LogshipClient) GetUnits(ctx context.Context, rq *pb.Empty, opts ...grpc.CallOption) (pb.LogUnitService_GetUnitsClient, error) {
-	return lc.delegate.GetUnits(ctx, rq, opts...)
-}
-
-func (lc *LogshipClient) GetNLines(ctx context.Context, rq *pb.NLineRQ, opts ...grpc.CallOption) (pb.LogUnitService_GetNLinesClient, error) {
-	return lc.delegate.GetNLines(ctx, rq, opts...)
-}
-
-func (lc *LogshipClient) Close() error {
-	return lc.cnn.Close()
-}
-
-func NewLogshipClient(target string) (*LogshipClient) {
-
-	conn, err := grpc.Dial(target, grpc.WithInsecure())
-	if err != nil {
-		logger.Error.Fatalf("Unable to create logship client: %s", err.Error())
-	}
-
-	service := pb.NewLogUnitServiceClient(conn)
-	return &LogshipClient{
-		cnn:      conn,
-		delegate: service,
 	}
 }
