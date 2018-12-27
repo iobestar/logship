@@ -17,8 +17,3 @@ func init()  {
 	Warning = log.New(os.Stdout, "WARN ", log.Ldate|log.Ltime|log.Lshortfile)
 	Error = log.New(os.Stderr, "ERROR ", log.Ldate|log.Ltime|log.Lshortfile)
 }
-
-
-
-
-

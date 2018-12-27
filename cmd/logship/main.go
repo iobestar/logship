@@ -27,7 +27,7 @@ var (
 	// server
 	server  = app.Command("server", "Logship server mode")
 	address = server.Flag("address", "Logship server address").Default("0.0.0.0:3340").String()
-	logUnit = server.Flag("logunit", "Logship server log units").Required().Strings();
+	logUnit = server.Flag("logunit", "Logship server log units").Required().Strings()
 
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
