@@ -26,12 +26,12 @@ var (
 
 	// server
 	server  = app.Command("server", "Logship server mode")
-	address = server.Flag("address", "Logship server address").Default("0.0.0.0:3340").String()
+	address = server.Flag("address", "Logship server address").Default("0.0.0.0:11034").String()
 	logUnit = server.Flag("logunit", "Logship server log units").Required().Strings()
 
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
-	targets      = client.Flag("target", "Logship server addresses").Default("localhost:3340").Strings()
+	targets      = client.Flag("target", "Logship server addresses").Default("localhost:11034").Strings()
 	units        = client.Command("units", "List log units").Default()
 	nLog         = client.Command("nlogs", "Fetch fixed number of logs from Logship server")
 	nLogUnitId   = nLog.Arg("unit-id", "Log unit identifier").Required().String()
