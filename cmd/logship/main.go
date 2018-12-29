@@ -36,9 +36,11 @@ var (
 	nLog         = client.Command("nlogs", "Fetch fixed number of logs from Logship server")
 	nLogUnitId   = nLog.Arg("unit-id", "Log unit identifier").Required().String()
 	nLogCount    = nLog.Arg("count", "Number of log records").Required().Int()
+	nLogReaderId = nLog.Arg("reader-id", "Log reader identifier").Default("").String()
 	tLog         = client.Command("tlogs", "Fetch logs by time from Logship server")
 	tLogUnitId   = tLog.Arg("unit-id", "Log unit identifier").Required().String()
 	tLogDuration = tLog.Arg("duration", "Time duration (e.g. 1h, 45m").Required().String()
+	tLogReaderId = tLog.Arg("reader-id", "Log reader identifier").Default("").String()
 	nLine        = client.Command("nlines", "Fetch fixed numbers of line form Logship server")
 	nLineUnitId  = nLine.Arg("unit-id", "Log unit identifier").Required().String()
 	nLineCount   = nLine.Arg("count", "Number of lines").Int()
@@ -133,8 +135,8 @@ func main() {
 			logger.Error.Fatalf("error parsing configuration: %s", err.Error())
 		}
 
-		// TODO: pass id as command parameter
-		err = cl.NLogs(context.Background(), targets, *nLogUnitId, *nLogCount, cfg.GetLogReaderConfig("default"))
+		logReaderCfg := cfg.GetLogReaderConfig(*nLogReaderId)
+		err = cl.NLogs(context.Background(), targets, *nLogUnitId, *nLogCount, logReaderCfg)
 		if nil != err {
 			logger.Error.Fatalf("error executing nlogs command: %s", err.Error())
 		}
@@ -147,8 +149,8 @@ func main() {
 			logger.Error.Fatalf("error parsing configuration: %s", err.Error())
 		}
 
-		// TODO: pass id as command parameter
-		err = cl.TLogs(context.Background(), targets, *tLogUnitId, *tLogDuration, cfg.GetLogReaderConfig("default"))
+		logReaderCfg := cfg.GetLogReaderConfig(*tLogReaderId)
+		err = cl.TLogs(context.Background(), targets, *tLogUnitId, *tLogDuration, logReaderCfg)
 		if nil != err {
 			logger.Error.Fatalf("error executing nlogs command: %s", err.Error())
 		}
