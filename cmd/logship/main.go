@@ -22,8 +22,6 @@ import (
 var (
 	app = kingpin.New("logship", "Tool for shipping logs")
 
-	configPath = app.Flag("config", "Configuration path").Default("logship.yml").String()
-
 	// server
 	server  = app.Command("server", "Logship server mode")
 	address = server.Flag("address", "Logship server address").Default("0.0.0.0:11034").String()
@@ -31,6 +29,7 @@ var (
 
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
+	configPath   = client.Flag("config", "Configuration path").Default("logship.yml").String()
 	targets      = client.Flag("target", "Logship server addresses").Default("localhost:11034").Strings()
 	units        = client.Command("units", "List log units").Default()
 	nLog         = client.Command("nlogs", "Fetch fixed number of logs from Logship server")
