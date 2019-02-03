@@ -10,7 +10,6 @@ import (
 
 type LogEntry struct {
 	Timestamp int64
-	Level     string
 	payload   []string
 }
 
@@ -46,14 +45,8 @@ func (lu *LogUnit) createLog(params map[string]string, payload []string, dateTim
 		}
 	}
 
-	var level string
-	if value, valueExist := params["level"]; valueExist {
-		level = value
-	}
-
 	return &LogEntry{
 		Timestamp: timestamp,
-		Level:     level,
 		payload:   payload,
 	}, nil
 

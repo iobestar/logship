@@ -23,9 +23,9 @@ var (
 	app = kingpin.New("logship", "Tool for shipping logs")
 
 	// server
-	server  = app.Command("server", "Logship server mode")
-	address = server.Flag("address", "Logship server address").Default("0.0.0.0:11034").String()
-	logUnit = server.Flag("logunit", "Logship server log units").Required().Strings()
+	server   = app.Command("server", "Logship server mode")
+	address  = server.Flag("address", "Logship server address").Default(":11034").String()
+	logUnits = server.Flag("logunits", "Logship server log units").Envar("LOG_UNITS").String()
 
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
@@ -52,7 +52,10 @@ func main() {
 
 		logger.Info.Println("Logship starting in mode: SERVER")
 
-		logUnits := unit.NewLogUnits(*logUnit)
+		logUnits, err := unit.NewLogUnits(*logUnits)
+		if nil != err {
+			logger.Error.Fatal(err)
+		}
 		logger.Info.Printf("Log units: %v", logUnits.GetLogUnitIds())
 
 		logService, err := pb.NewLogService(logUnits)

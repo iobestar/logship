@@ -2,6 +2,7 @@ package unit
 
 import (
 	"context"
+	"fmt"
 	"github.com/iobestar/logship/tail"
 	"github.com/iobestar/logship/utils/logger"
 	"os"
@@ -11,8 +12,8 @@ import (
 )
 
 type LogUnit struct {
-	Id             string
-	FilePattern    string
+	Id          string
+	FilePattern string
 }
 
 type LogFile struct {
@@ -22,18 +23,21 @@ type LogFile struct {
 
 type LogUnits map[string]*LogUnit
 
-func NewLogUnits(units []string) LogUnits {
+func NewLogUnits(logUnits string) (LogUnits, error) {
+	units := strings.Split(logUnits, ":")
+	if len(units)%2 != 0 {
+		return nil, fmt.Errorf("odd number of log units tokens: %v", units)
+	}
 
 	result := LogUnits{}
-	for _, _unit := range units {
-		_unit := strings.Split(_unit, ":")
+	for i := 0; i < len(units)-1; i = i + 2 {
 		unit := &LogUnit{
-			Id: _unit[0],
-			FilePattern: _unit[1],
+			Id:          units[i],
+			FilePattern: units[i+1],
 		}
 		result[unit.Id] = unit
 	}
-	return result
+	return result, nil
 }
 
 func (lu LogUnits) GetLogUnit(unitId string) *LogUnit {

@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/go-yaml/yaml"
 	"io/ioutil"
+	"os"
 )
 
 type Config struct {
@@ -16,13 +17,16 @@ type LogReaderConfig struct {
 }
 
 var (
-	defaultLogPattern     = "^(?P<datetime>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+(?P<level>\\w+).*"
+	defaultLogPattern     = "^(?P<datetime>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}).*"
 	defaultDateTimeLayout = "2006-01-02 15:04:05.000"
 
 	defaultLogReader = LogReaderConfig{
-		Id:"default",
 		LogPattern:     defaultLogPattern,
 		DateTimeLayout: defaultDateTimeLayout,
+	}
+
+	defaultConfig = &Config{
+		LogReaders: []LogReaderConfig{defaultLogReader},
 	}
 )
 
@@ -38,11 +42,6 @@ func (lr *LogReaderConfig) UnmarshalYAML(unmarshal func(interface{}) error) erro
 }
 
 func (c *Config) GetLogReaderConfig(logReaderConfigId string) LogReaderConfig {
-
-	if len(c.LogReaders) == 0 {
-		return defaultLogReader
-	}
-
 	for _, lrc := range c.LogReaders {
 		if lrc.Id == logReaderConfigId {
 			return lrc
@@ -52,6 +51,9 @@ func (c *Config) GetLogReaderConfig(logReaderConfigId string) LogReaderConfig {
 }
 
 func ParseConfig(filename string) (*Config, error) {
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		return defaultConfig, nil
+	}
 
 	bytes, err := getBytes(filename)
 	if nil != err {

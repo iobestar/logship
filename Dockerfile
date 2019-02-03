@@ -5,4 +5,4 @@ MAINTAINER iobestar <ivica.obestar@gmail.com>
 COPY logship /bin/logship
 
 EXPOSE 11034
-ENTRYPOINT ["/bin/logship"]
+ENTRYPOINT ["/bin/logship", "server"]
