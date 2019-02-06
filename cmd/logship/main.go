@@ -15,8 +15,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
+)
+
+var (
+	defaultPort   = 11034
+	defaultTarget = "localhost:" + strconv.Itoa(defaultPort)
 )
 
 var (
@@ -24,13 +30,13 @@ var (
 
 	// server
 	server   = app.Command("server", "Logship server mode")
-	address  = server.Flag("address", "Logship server address").Default(":11034").String()
+	address  = server.Flag("address", "Logship server address").Default(":" + strconv.Itoa(defaultPort)).String()
 	logUnits = server.Flag("logunits", "Logship server log units").Envar("LOG_UNITS").String()
 
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
 	configPath   = client.Flag("config", "Configuration path").Default("logship.yml").String()
-	targets      = client.Flag("target", "Logship server addresses").Default("localhost:11034").Strings()
+	target       = client.Flag("target", "Logship server addresses").Default(defaultTarget).String()
 	units        = client.Command("units", "List log units").Default()
 	nLog         = client.Command("nlogs", "Fetch fixed number of logs from Logship server")
 	nLogUnitId   = nLog.Arg("unit-id", "Log unit identifier").Required().String()
@@ -113,24 +119,36 @@ func main() {
 			grpcS.GracefulStop()
 		}
 	case units.FullCommand():
-		targets := cl.CreateTargets(*targets)
-		defer targets.Close()
+		conn := connect(adjustTarget(*target))
+		defer func() {
+			if err := conn.Close(); nil != err {
+				logger.Warning.Println(err)
+			}
+		}()
 
-		err := cl.Units(context.Background(), targets)
+		err := cl.Units(context.Background(), conn)
 		if nil != err {
 			logger.Error.Fatalf("error executing units command: %s", err.Error())
 		}
 	case nLine.FullCommand():
-		targets := cl.CreateTargets(*targets)
-		defer targets.Close()
+		conn := connect(adjustTarget(*target))
+		defer func() {
+			if err := conn.Close(); nil != err {
+				logger.Warning.Println(err)
+			}
+		}()
 
-		err := cl.Lines(context.Background(), targets, *nLineUnitId, *nLineCount)
+		err := cl.Lines(context.Background(), conn, *nLineUnitId, *nLineCount)
 		if nil != err {
 			logger.Error.Fatalf("error executing units command: %s", err.Error())
 		}
 	case nLog.FullCommand():
-		targets := cl.CreateTargets(*targets)
-		defer targets.Close()
+		conn := connect(adjustTarget(*target))
+		defer func() {
+			if err := conn.Close(); nil != err {
+				logger.Warning.Println(err)
+			}
+		}()
 
 		cfg, err := config.ParseConfig(*configPath)
 		if nil != err {
@@ -138,13 +156,17 @@ func main() {
 		}
 
 		logReaderCfg := cfg.GetLogReaderConfig(*nLogReaderId)
-		err = cl.NLogs(context.Background(), targets, *nLogUnitId, *nLogCount, logReaderCfg)
+		err = cl.NLogs(context.Background(), conn, *nLogUnitId, *nLogCount, logReaderCfg)
 		if nil != err {
 			logger.Error.Fatalf("error executing nlogs command: %s", err.Error())
 		}
 	case tLog.FullCommand():
-		targets := cl.CreateTargets(*targets)
-		defer targets.Close()
+		conn := connect(adjustTarget(*target))
+		defer func() {
+			if err := conn.Close(); nil != err {
+				logger.Warning.Println(err)
+			}
+		}()
 
 		cfg, err := config.ParseConfig(*configPath)
 		if nil != err {
@@ -152,10 +174,37 @@ func main() {
 		}
 
 		logReaderCfg := cfg.GetLogReaderConfig(*tLogReaderId)
-		err = cl.TLogs(context.Background(), targets, *tLogUnitId, *tLogDuration, logReaderCfg)
+		err = cl.TLogs(context.Background(), conn, *tLogUnitId, *tLogDuration, logReaderCfg)
 		if nil != err {
 			logger.Error.Fatalf("error executing nlogs command: %s", err.Error())
 		}
 	default:
 	}
+}
+
+func adjustTarget(target string) string {
+
+	if target == defaultTarget {
+		return target
+	}
+
+	if len(target) == 0 {
+		return defaultTarget
+	}
+
+	if strings.Index(target, ":") == -1 {
+		return target + ":" + strconv.Itoa(defaultPort)
+	}
+	return target
+}
+
+func connect(target string) *grpc.ClientConn {
+	if len(target) == 0 {
+		logger.Error.Fatalf("target is empty")
+	}
+	conn, err := grpc.Dial(target, grpc.WithInsecure())
+	if err != nil {
+		logger.Error.Fatalf("unable to create channel for target %s: %s", target, err.Error())
+	}
+	return conn
 }
