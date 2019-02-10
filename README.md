@@ -1,7 +1,7 @@
 # Logship
 Simple CLI tool for fetching file data or log entries from remote host.
 
-[![Build Status](https://travis-ci.org/iobestar/jbalancer.svg?branch=master)](https://travis-ci.org/iobestar/logship)
+[![Build Status](https://travis-ci.org/iobestar/logship.svg?branch=master)](https://travis-ci.org/iobestar/logship)
 
 #### Build from source
 
