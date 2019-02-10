@@ -7,7 +7,7 @@ import (
 
 func TestNewConfigWithDefaults(t *testing.T) {
 
-	filename := "fixture/logship.yml"
+	filename := "fixture/test-config.yml"
 
 	c, err := ParseConfig(filename)
 	assert.Nil(t, err)

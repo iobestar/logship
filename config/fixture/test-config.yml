@@ -1,0 +1,5 @@
+log_readers:
+  - id: rs_replication_log
+  - id: rs_error_log
+    log_pattern: "any"
+    date_time_layout: "42"
