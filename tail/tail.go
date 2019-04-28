@@ -2,17 +2,25 @@ package tail
 
 import (
 	"context"
-	"github.com/iobestar/logship/utils/logger"
 	"os"
 	"strings"
 )
 
 const lineBuffer = 256
 
-func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
+func ReadTail(ctx context.Context, file *os.File) (<-chan string, <- chan error) {
+
+	var (
+		lines  = make(chan string, lineBuffer)
+		errors  = make(chan error)
+	)
+
 	fileInfo, err := file.Stat()
 	if nil != err {
-		return nil, err
+		errors <- err
+		close(lines)
+		close(errors)
+		return lines, errors
 	}
 
 	fileSize := fileInfo.Size()
@@ -26,11 +34,11 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 		total  = int64(0)
 		remain = fileSize
 		index  = int64(0)
-		lines  = make(chan string, lineBuffer)
 	)
 
 	go func() {
 		defer close(lines)
+		defer close(errors)
 		var lineBuffer = strings.Builder{}
 		for {
 			if remain == 0 {
@@ -46,8 +54,7 @@ func ReadTail(ctx context.Context, file *os.File) (<-chan string, error) {
 
 			n, err := file.ReadAt(buf, index)
 			if nil != err {
-				// TODO: remove logging and return error
-				logger.Error.Printf("Error reading file: %s", err.Error())
+				errors <- err
 				return
 			}
 

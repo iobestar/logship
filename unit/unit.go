@@ -40,14 +40,6 @@ func NewLogUnits(logUnits string) (LogUnits, error) {
 	return result, nil
 }
 
-func (lu LogUnits) GetLogUnit(unitId string) *LogUnit {
-
-	if u, ok := lu[unitId]; ok {
-		return u
-	}
-	return nil
-}
-
 func (lu LogUnits) GetLogUnitIds() []string {
 
 	var result []string
@@ -102,17 +94,19 @@ func (lu *LogUnit) StreamLines(ctx context.Context) (<-chan string, <-chan error
 			}
 			files = append(files, file)
 
-			tailLines, err := tail.ReadTail(ctx, file)
-			if nil != err {
-				errors <- err
-				return
-			}
+			tailLines, tailErrors := tail.ReadTail(ctx, file)
 		file:
 			for {
 				select {
 				case line, ok := <-tailLines:
 					if ok {
 						lines <- line
+					} else {
+						break file
+					}
+				case err, ok := <-tailErrors:
+					if ok {
+						errors <- err
 					} else {
 						break file
 					}

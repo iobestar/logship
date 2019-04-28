@@ -36,7 +36,7 @@ var (
 	// client
 	client       = app.Command("client", "Logship client mode").Default()
 	configPath   = client.Flag("config", "Configuration path").Default("logship.yml").String()
-	target       = client.Flag("target", "Logship server addresses").Default(defaultTarget).String()
+	target       = client.Flag("target", "Logship server addresses").Short('t').Default(defaultTarget).String()
 	units        = client.Command("units", "List log units").Default()
 	nLog         = client.Command("nlogs", "Fetch fixed number of logs from Logship server")
 	nLogUnitId   = nLog.Arg("unit-id", "Log unit identifier").Required().String()
@@ -138,7 +138,7 @@ func main() {
 			}
 		}()
 
-		err := cl.Lines(context.Background(), conn, *nLineUnitId, *nLineCount)
+		err := cl.NLines(context.Background(), conn, *nLineUnitId, *nLineCount)
 		if nil != err {
 			logger.Error.Fatalf("error executing units command: %s", err.Error())
 		}

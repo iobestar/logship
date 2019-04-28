@@ -12,16 +12,24 @@ func TestReadTail(t *testing.T) {
 	defer f.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
-	lines, err := ReadTail(ctx, f)
-	assert.Nil(t, err, "error reading tail line")
+	lines, errors := ReadTail(ctx, f)
 
 	var result []string
+	done:
 	for {
-		line, ok := <-lines
-		if ok {
-			result = append(result, line)
-		} else {
-			break
+		select {
+		case line, ok := <-lines:
+			if ok {
+				result = append(result, line)
+			} else {
+				break done
+			}
+		case err, ok := <-errors:
+			if ok {
+				assert.Nil(t, err, "unexpected error during tails reading")
+			} else {
+				break done
+			}
 		}
 	}
 

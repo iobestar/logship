@@ -55,33 +55,15 @@ func ParseConfig(filename string) (*Config, error) {
 		return defaultConfig, nil
 	}
 
-	bytes, err := getBytes(filename)
+	cfgBytes, err := ioutil.ReadFile(filename)
 	if nil != err {
 		return nil, err
 	}
-	return parseBytes(bytes)
-}
-
-func parseBytes(bytes []byte) (*Config, error) {
-
-	cfg := &Config{}
-	if err := yaml.Unmarshal(bytes, cfg); nil != err {
-		panic(err)
-	}
 
 	var config Config
-	err := yaml.Unmarshal(bytes, &config)
+	err = yaml.Unmarshal(cfgBytes, &config)
 	if err != nil {
 		return nil, err
 	}
 	return &config, nil
-}
-
-func getBytes(filename string) ([]byte, error) {
-
-	cfgBytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return cfgBytes, nil
 }

@@ -45,8 +45,31 @@ func TestLogUnit_StreamLines(t *testing.T) {
 }
 
 func TestLogUnit_StreamLines_MultipleFiles(t *testing.T) {
+	unit := &LogUnit{
+		Id:          "test",
+		FilePattern: "fixture/lines_multiple.log*",
+	}
 
-	// TODO: add test
+	result := make([]string, 0, 0)
+	lines, errors := unit.StreamLines(context.Background())
+
+done:
+	for {
+		select {
+		case line, ok := <-lines:
+			if ok {
+				result = append(result, line)
+			} else {
+				break done
+			}
+		case err, ok := <-errors:
+			if ok {
+				assert.Nil(t, err, "Unexpected error during lines streaming")
+			}
+		}
+	}
+
+	assert.EqualValues(t, 11, len(result))
 }
 
 func TestGetLogFilesInOrderOfModification(t *testing.T) {

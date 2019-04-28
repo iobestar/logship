@@ -10,7 +10,7 @@ import (
 	"io"
 )
 
-func Lines(ctx context.Context, conn *grpc.ClientConn, unitId string, count int) error {
+func NLines(ctx context.Context, conn *grpc.ClientConn, unitId string, count int) error {
 	service := rpc.NewLogUnitServiceClient(conn)
 	lineStream, err := service.NLines(ctx, &rpc.NLineRQ{
 		UnitId: unitId,
