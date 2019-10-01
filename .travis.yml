@@ -2,4 +2,6 @@ language: go
 
 go:
   - "1.12.x"
+env:
+  - GO111MODULE=true
 script: go test ./... -v
