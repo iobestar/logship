@@ -6,6 +6,9 @@ Simple CLI tool for fetching file data or log entries from remote host.
 #### Build from source
 
     $ go get -u github.com/iobestar/logship/cmd/logship
+    
+_Note: It is recommended to have `GO111MODULE=on` to ensure the correct
+dependencies are used._
 
 ### Server
 
