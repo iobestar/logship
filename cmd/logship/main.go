@@ -35,6 +35,9 @@ const (
 var (
 	app = kingpin.New("logship", "Tool for shipping logs")
 
+	// version
+	versionCmd = app.Command("version", "")
+
 	// server
 	server     = app.Command("server", "Logship server mode")
 	address    = server.Flag("address", "Logship server address").Default(":" + strconv.Itoa(defaultPort)).String()
@@ -57,9 +60,17 @@ var (
 	nLineCount     = nLine.Arg("count", "Number of lines").Int()
 )
 
+var (
+	Version  string
+	Revision string
+)
+
 func main() {
 
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
+	case versionCmd.FullCommand():
+		fmt.Printf("%-8s: %s\n", "version", Version)
+		fmt.Printf("%s: %s\n", "revision", Revision)
 	case server.FullCommand():
 		cfg, err := config.ParseConfig(*configFile)
 		if err != nil {

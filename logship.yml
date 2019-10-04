@@ -1,4 +1,0 @@
-log_units:
-  - id: infobipipcore_output
-    glob: /Users/iobestar/Desktop/logship/smsout.log*
-
