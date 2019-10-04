@@ -2,8 +2,9 @@ package rpc
 
 import (
 	"context"
+	"github.com/go-kit/kit/log/level"
+	"github.com/iobestar/logship/logging"
 	"github.com/iobestar/logship/unit"
-	"github.com/iobestar/logship/utils/logger"
 	"io"
 	"regexp"
 	"time"
@@ -40,7 +41,7 @@ func (s *DefaultLogUnitService) NLines(rq *NLineRQ, stream LogUnitService_NLines
 						return nil
 					}
 					if nil != err {
-						logger.Error.Println(err)
+						level.Error(logging.Logger).Log("err", err.Error())
 						return err
 					}
 				} else {
@@ -83,7 +84,7 @@ func (s *DefaultLogUnitService) NLogs(rq *NLogRQ, stream LogUnitService_NLogsSer
 						return nil
 					}
 					if nil != err {
-						logger.Error.Println(err)
+						level.Error(logging.Logger).Log("err", err.Error())
 						return err
 					}
 				} else {
@@ -133,7 +134,7 @@ func (s *DefaultLogUnitService) TLogs(rq *TLogRQ, stream LogUnitService_TLogsSer
 						return nil
 					}
 					if nil != err {
-						logger.Error.Println(err)
+						level.Error(logging.Logger).Log("err", err.Error())
 						return err
 					}
 				} else {
@@ -161,7 +162,7 @@ func (s *DefaultLogUnitService) GetUnits(rq *Empty, stream LogUnitService_GetUni
 			return nil
 		}
 		if nil != err {
-			logger.Error.Println(err)
+			level.Error(logging.Logger).Log("err", err.Error())
 			return err
 		}
 	}

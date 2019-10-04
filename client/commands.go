@@ -3,9 +3,8 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/iobestar/logship/config"
+	"github.com/iobestar/logship/logging"
 	"github.com/iobestar/logship/unit/rpc"
-	"github.com/iobestar/logship/utils/logger"
 	"google.golang.org/grpc"
 	"io"
 )
@@ -27,7 +26,7 @@ func NLines(ctx context.Context, conn *grpc.ClientConn, unitId string, count int
 			break
 		}
 		if err != nil {
-			logger.Error.Fatal(err)
+			logging.StdErrLogger.Fatal(err)
 		}
 
 		result = append(result, rs.Line)
@@ -38,13 +37,13 @@ func NLines(ctx context.Context, conn *grpc.ClientConn, unitId string, count int
 	return nil
 }
 
-func NLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, count int, logReaderConfig config.LogReaderConfig) error {
+func NLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, count int, dateTimeLayout, logPattern string) error {
 	service := rpc.NewLogUnitServiceClient(conn)
 	logStream, err := service.NLogs(ctx, &rpc.NLogRQ{
 		UnitId:         unitId,
 		Count:          int32(count),
-		DateTimeLayout: logReaderConfig.DateTimeLayout,
-		LogPattern:     logReaderConfig.LogPattern,
+		DateTimeLayout: dateTimeLayout,
+		LogPattern:     logPattern,
 	})
 	if nil != err {
 		return err
@@ -57,7 +56,7 @@ func NLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, count int,
 			break
 		}
 		if err != nil {
-			logger.Error.Fatal(err)
+			logging.StdErrLogger.Fatal(err)
 		}
 
 		result = append(result, rs.Log)
@@ -68,13 +67,13 @@ func NLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, count int,
 	return nil
 }
 
-func TLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, duration string, logReaderConfig config.LogReaderConfig) error {
+func TLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, duration string, dateTimeLayout, logPattern string) error {
 	service := rpc.NewLogUnitServiceClient(conn)
 	logStream, err := service.TLogs(ctx, &rpc.TLogRQ{
 		UnitId:         unitId,
 		Duration:       duration,
-		DateTimeLayout: logReaderConfig.DateTimeLayout,
-		LogPattern:     logReaderConfig.LogPattern,
+		DateTimeLayout: dateTimeLayout,
+		LogPattern:     logPattern,
 	})
 	if nil != err {
 		return err
@@ -87,7 +86,7 @@ func TLogs(ctx context.Context, conn *grpc.ClientConn, unitId string, duration s
 			break
 		}
 		if err != nil {
-			logger.Error.Fatal(err)
+			logging.StdErrLogger.Fatal(err)
 		}
 
 		result = append(result, rs.Log)

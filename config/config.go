@@ -7,63 +7,44 @@ import (
 )
 
 type Config struct {
-	LogReaders []LogReaderConfig `yaml:"log_readers"`
+	LogUnits []LogUnit `yaml:"log_units"`
 }
 
-type LogReaderConfig struct {
-	Id             string `yaml:"id"`
-	LogPattern     string `yaml:"log_pattern"`
-	DateTimeLayout string `yaml:"date_time_layout"`
+type LogUnit struct {
+	Id   string `yaml:"id"`
+	Glob string `yaml:"glob"`
 }
 
 var (
-	defaultLogPattern     = "^(?P<datetime>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}).*"
-	defaultDateTimeLayout = "2006-01-02 15:04:05.000"
-
-	defaultLogReader = LogReaderConfig{
-		LogPattern:     defaultLogPattern,
-		DateTimeLayout: defaultDateTimeLayout,
-	}
-
-	defaultConfig = &Config{
-		LogReaders: []LogReaderConfig{defaultLogReader},
+	defaultConfig = Config{
+		LogUnits: []LogUnit{},
 	}
 )
 
-func (lr *LogReaderConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func ParseConfig(filename string) (Config, error) {
+	cfgBytes := []byte(os.Getenv("LOGSHIP_CONFIG"))
+	if len(cfgBytes) == 0 {
+		if len(filename) == 0 {
+			return defaultConfig, nil
+		}
 
-	*lr = defaultLogReader
+		if _, err := os.Stat(filename); os.IsNotExist(err) {
+			return defaultConfig, nil
+		}
 
-	type plain LogReaderConfig
-	if err := unmarshal((*plain)(lr)); err != nil {
-		return err
-	}
-	return nil
-}
+		var err error
+		cfgBytes, err = ioutil.ReadFile(filename)
+		if err != nil {
+			return defaultConfig, err
+		}
 
-func (c *Config) GetLogReaderConfig(logReaderConfigId string) LogReaderConfig {
-	for _, lrc := range c.LogReaders {
-		if lrc.Id == logReaderConfigId {
-			return lrc
+		if len(cfgBytes) == 0 {
+			return defaultConfig, nil
 		}
 	}
-	return defaultLogReader
-}
-
-func ParseConfig(filename string) (*Config, error) {
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return defaultConfig, nil
+	config := &Config{}
+	if err := yaml.Unmarshal(cfgBytes, config); nil != err {
+		return defaultConfig, err
 	}
-
-	cfgBytes, err := ioutil.ReadFile(filename)
-	if nil != err {
-		return nil, err
-	}
-
-	var config Config
-	err = yaml.Unmarshal(cfgBytes, &config)
-	if err != nil {
-		return nil, err
-	}
-	return &config, nil
+	return *config, nil
 }

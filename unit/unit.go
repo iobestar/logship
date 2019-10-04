@@ -2,18 +2,18 @@ package unit
 
 import (
 	"context"
-	"fmt"
+	"github.com/go-kit/kit/log/level"
+	"github.com/iobestar/logship/config"
+	"github.com/iobestar/logship/logging"
 	"github.com/iobestar/logship/tail"
-	"github.com/iobestar/logship/utils/logger"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 )
 
 type LogUnit struct {
-	Id          string
-	FilePattern string
+	Id   string
+	Glob string
 }
 
 type LogFile struct {
@@ -23,19 +23,13 @@ type LogFile struct {
 
 type LogUnits map[string]*LogUnit
 
-func NewLogUnits(logUnits string) (LogUnits, error) {
-	units := strings.Split(logUnits, ":")
-	if len(units)%2 != 0 {
-		return nil, fmt.Errorf("odd number of log units tokens: %v", units)
-	}
-
+func NewLogUnits(logUnits []config.LogUnit) (LogUnits, error) {
 	result := LogUnits{}
-	for i := 0; i < len(units)-1; i = i + 2 {
-		unit := &LogUnit{
-			Id:          units[i],
-			FilePattern: units[i+1],
+	for _, lu := range logUnits {
+		result[lu.Id] = &LogUnit{
+			Id:   lu.Id,
+			Glob: lu.Glob,
 		}
-		result[unit.Id] = unit
 	}
 	return result, nil
 }
@@ -75,7 +69,7 @@ func (lu *LogUnit) StreamLines(ctx context.Context) (<-chan string, <-chan error
 			for _, f := range files {
 				err := f.Close()
 				if nil != err {
-					logger.Warning.Println(err)
+					level.Warn(logging.Logger).Log("err", err.Error())
 				}
 			}
 		}()
@@ -121,16 +115,16 @@ func (lu *LogUnit) StreamLines(ctx context.Context) (<-chan string, <-chan error
 
 func (lu *LogUnit) getLogFiles() ([]*LogFile, error) {
 
-	pattern := lu.FilePattern
-	if !filepath.IsAbs(pattern) {
+	glob := lu.Glob
+	if !filepath.IsAbs(glob) {
 		if wd, err := os.Getwd(); nil == err {
-			pattern = wd + string(os.PathSeparator) + pattern
+			glob = wd + string(os.PathSeparator) + glob
 		} else {
 			return nil, err
 		}
 	}
 
-	paths, err := filepath.Glob(pattern)
+	paths, err := filepath.Glob(glob)
 	if nil != err {
 		return nil, err
 	}

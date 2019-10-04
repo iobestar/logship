@@ -11,8 +11,8 @@ import (
 func TestLogUnit_StreamLogs(t *testing.T) {
 
 	logUnit := &LogUnit{
-		Id:             "test",
-		FilePattern: "fixture/output.log",
+		Id:   "test",
+		Glob: "fixture/output.log",
 	}
 
 	dateTimeLayout := "2006-01-02 15:04:05.000"
