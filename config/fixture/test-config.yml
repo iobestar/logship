@@ -1,5 +1,5 @@
-log_readers:
-  - id: rs_replication_log
-  - id: rs_error_log
-    log_pattern: "any"
-    date_time_layout: "42"
+log_units:
+  - id: test_error
+    glob: error.*
+  - id: test_output
+    glob: output.*

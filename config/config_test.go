@@ -5,20 +5,15 @@ import (
 	"testing"
 )
 
-func TestNewConfigWithDefaults(t *testing.T) {
-
-	filename := "fixture/test-config.yml"
-
-	c, err := ParseConfig(filename)
+func TestParseConfig(t *testing.T) {
+	cfg, err := ParseConfig("fixture/test-config.yml")
 	assert.Nil(t, err)
 
-	assert.Equal(t, 2, len(c.LogReaders))
+	assert.Equal(t, 2, len(cfg.LogUnits))
 
-	assert.Equal(t, "rs_replication_log", c.LogReaders[0].Id)
-	assert.Equal(t, defaultLogPattern, c.LogReaders[0].LogPattern)
-	assert.Equal(t, defaultDateTimeLayout, c.LogReaders[0].DateTimeLayout)
+	assert.Equal(t, "test_error", cfg.LogUnits[0].Id)
+	assert.Equal(t, "error.*", cfg.LogUnits[0].Glob)
 
-	assert.Equal(t, "rs_error_log", c.LogReaders[1].Id)
-	assert.Equal(t, "any", c.LogReaders[1].LogPattern)
-	assert.Equal(t, "42", c.LogReaders[1].DateTimeLayout)
+	assert.Equal(t, "test_output", cfg.LogUnits[1].Id)
+	assert.Equal(t, "output.*", cfg.LogUnits[1].Glob)
 }

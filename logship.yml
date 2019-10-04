@@ -1,2 +1,4 @@
-log_readers:
-  - id: default
+log_units:
+  - id: infobipipcore_output
+    glob: /Users/iobestar/Desktop/logship/smsout.log*
+

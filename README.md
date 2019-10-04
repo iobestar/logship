@@ -13,9 +13,16 @@ dependencies are used._
 ### Server
 
 Logship in server mode serves file data in form of log units. Log unit identifies  
-group of files based on glob pattern. Log unit is defined with id and glob pattern.  
-Log unit definition format: <log_unit_id_n>:<glob_pattern_n:<log_unit_id_n+1>:<glob_pattern_n+1
+group of files based on glob pattern. Log unit is defined with id and glob pattern.
 
+Configuration file (logship.yml):
+
+    log_units:
+      - id: service_error
+        glob: /var/log/myservice/error.log*
+      - id: service_output
+        glob: /var/log/myservice/outout.log*
+    
 
 Run logship server:
 
@@ -23,18 +30,12 @@ Run logship server:
 
 Run as logship server as Docker:
 
-    $ docker run --name=logship -p 11034:11034 -v "/var/log/myservice":"/var/log/myservice" -e LOG_UNITS="myservice_error:/var/log/myservice/error.log*:myservice_output:/var/log/myservice/output.log*" -d iobestar/logship
+    $ docker run --name=logship -p 11034:11034 -v "/var/log/myservice":"/var/log/myservice" -e LOGSHIP_CONFIG="<logship.yml>" -d iobestar/logship
+
 
 ### Client (CLI)
 
-Default configuration (logship.yml):
-
-    log_readers:
-      - id: default
-        log_pattern: "^(?P<datetime>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}).*"
-        date_time_layout: "2006-01-02 15:04:05.000"
-
-Log reader defines log pattern as regex and date time layout using Go date pattern notation.
+    logship client --help
 
 #### Fetch log units
 
@@ -52,20 +53,18 @@ number_of_lines: count of lines
     
 #### Fetch last logs by count
 
-    $ logship --config=logship.yml --target=localhost:11034 nlogs <unit> <number_of_logs> <reader_id>
+    $ logship --target=localhost:11034 nlogs <unit> <number_of_logs> <reader_id>
     
 config: configuration path  
 target: logship server address  
 unit: id of log unit  
 number_of_logs: count of logs  
-reader_id: id of reader from configuration; first log reader definition will be used if not specified
     
 #### Fetch last logs by time
 
-    $ logship --config=logship.yml --target=localhost:11034 tlogs <unit> <duration> <reader_id>
+    $ logship --target=localhost:11034 tlogs <unit> <duration> <reader_id>
     
 config: configuration path  
 target: logship server address  
 unit: id of log unit  
 duration: "1s", "10m", "5h"  
-reader_id: id of reader from configuration; first log reader definition will be used if not specified
