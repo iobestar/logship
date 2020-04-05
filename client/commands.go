@@ -9,6 +9,26 @@ import (
 	"io"
 )
 
+func Units(ctx context.Context, conn *grpc.ClientConn) error {
+	service := rpc.NewLogUnitServiceClient(conn)
+	unitStream, err := service.GetUnits(ctx, &rpc.Empty{})
+	if nil != err {
+		return err
+	}
+
+	for {
+		u, err := unitStream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(u.Unit)
+	}
+	return nil
+}
+
 func NLines(ctx context.Context, conn *grpc.ClientConn, unitId string, count int) error {
 	service := rpc.NewLogUnitServiceClient(conn)
 	lineStream, err := service.NLines(ctx, &rpc.NLineRQ{

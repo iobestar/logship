@@ -8,9 +8,9 @@ package rpc;
 
 service LogUnitService {
     rpc GetUnits (Empty) returns (stream UnitRS);
-    rpc NLines(NLineRQ) returns (stream NLineRS);
-    rpc NLogs(NLogRQ) returns (stream LogRS);
-    rpc TLogs(TLogRQ) returns (stream LogRS);
+    rpc NLines (NLineRQ) returns (stream NLineRS);
+    rpc NLogs (NLogRQ) returns (stream LogRS);
+    rpc TLogs (TLogRQ) returns (stream LogRS);
 }
 
 message Empty {
